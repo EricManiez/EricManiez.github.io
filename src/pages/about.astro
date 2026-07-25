@@ -1,0 +1,28 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+---
+
+<BaseLayout title="About" description="Who I am and how to reach me.">
+  <h1 class="text-3xl font-semibold">About</h1>
+
+  <section class="prose prose-slate mt-6 max-w-none">
+    <p>
+      Short bio goes here — the two or three sentence version. Where you're
+      based, what you focus on, and the through-line between developer /
+      musician / teacher.
+    </p>
+
+    <h2>Background</h2>
+    <p>
+      A paragraph or two on the longer story. Formative projects, bands,
+      teachers, and detours that got you here.
+    </p>
+
+    <h2 id="contact">Contact</h2>
+    <ul>
+      <li>Email: <a href="mailto:maniez.eric@gmail.com">maniez.eric@gmail.com</a></li>
+      <li>GitHub: <a href="https://github.com/">github.com/&lt;username&gt;</a></li>
+      <li>Bandcamp: <a href="https://bandcamp.com/">your-handle.bandcamp.com</a></li>
+    </ul>
+  </section>
+</BaseLayout>

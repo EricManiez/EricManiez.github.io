@@ -1,0 +1,38 @@
+---
+interface Props {
+  provider: 'bandcamp' | 'soundcloud' | 'spotify' | 'youtube';
+  embedUrl: string;
+  title: string;
+}
+
+const { provider, embedUrl, title } = Astro.props;
+
+const config = {
+  bandcamp: { height: '120', allow: '' },
+  soundcloud: { height: '166', allow: 'autoplay' },
+  spotify: { height: '152', allow: 'encrypted-media; autoplay; clipboard-write; picture-in-picture' },
+  youtube: { height: '', allow: 'accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share' },
+}[provider];
+---
+
+{provider === 'youtube' ? (
+  <div class="relative w-full aspect-video overflow-hidden rounded">
+    <iframe
+      src={embedUrl}
+      title={title}
+      loading="lazy"
+      allow={config.allow}
+      allowfullscreen
+      class="absolute inset-0 h-full w-full border-0"
+    />
+  </div>
+) : (
+  <iframe
+    src={embedUrl}
+    title={title}
+    loading="lazy"
+    allow={config.allow}
+    height={config.height}
+    class="w-full border-0 rounded"
+  />
+)}

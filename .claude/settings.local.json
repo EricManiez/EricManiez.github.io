@@ -1,0 +1,18 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(rtk init *)",
+      "Bash(rtk ls *)",
+      "Bash(npm --version)",
+      "Bash(rtk npm *)",
+      "Bash(rtk read *)",
+      "Bash(/Users/emaniez/Code/portfolio/node_modules/.bin/astro --version)",
+      "Bash(rtk rm *)",
+      "Bash(node -p \"process.arch\")",
+      "Bash(rtk gh *)",
+      "Bash(rtk brew *)",
+      "Bash(rtk ssh *)",
+      "Bash(rtk git *)"
+    ]
+  }
+}
