@@ -2,27 +2,41 @@
 import BaseLayout from '../layouts/BaseLayout.astro';
 ---
 
-<BaseLayout title="About" description="Who I am and how to reach me.">
+<BaseLayout
+  title="About — Eric Maniez"
+  description="Software developer, music teacher, and artist based in Lyon, France."
+>
   <h1 class="text-3xl font-semibold">About</h1>
+  <p class="mt-2 font-mono text-xs uppercase tracking-widest text-[color:var(--color-ink-muted)]">
+    Lyon, France
+  </p>
 
   <section class="prose prose-slate mt-6 max-w-none">
-    <p>
-      Short bio goes here — the two or three sentence version. Where you're
-      based, what you focus on, and the through-line between developer /
-      musician / teacher.
+    <p class="lead">
+      Creative spirit, at the intersection of art & technology.
     </p>
 
-    <h2>Background</h2>
     <p>
-      A paragraph or two on the longer story. Formative projects, bands,
-      teachers, and detours that got you here.
+      A professional software developer, music teacher and artist, I take both
+      pride and pleasure in helping others accomplish their creative or
+      entrepreneurial vision, no matter the field. I've been a software
+      consultant, a national team sports coach, and a teacher in both
+      grass-roots and elite music schools, and I look forward to standing by
+      your side as you take up your next challenge.
     </p>
 
-    <h2 id="contact">Contact</h2>
+    <h2 id="contact">Elsewhere &amp; contact</h2>
     <ul>
       <li>Email: <a href="mailto:maniez.eric@gmail.com">maniez.eric@gmail.com</a></li>
-      <li>GitHub: <a href="https://github.com/">github.com/&lt;username&gt;</a></li>
-      <li>Bandcamp: <a href="https://bandcamp.com/">your-handle.bandcamp.com</a></li>
+      <li>GitHub: <a href="https://github.com/EricManiez">github.com/EricManiez</a></li>
+      <li>Bandcamp: <a href="https://leavethebiker.bandcamp.com">leavethebiker.bandcamp.com</a></li>
+      <li>Spotify: <a href="https://open.spotify.com/album/5bXBsC4Tix3zIjXnqZlp2L">Album on Spotify</a></li>
+      <li>
+        <a href="https://drive.google.com/file/d/0BxJtsT7YpRR6emRYQzZqTWN5d2c/view?usp=sharing&resourcekey=0-QdofO4-webuwe5YwY5D0lA">
+          Ultimate frisbee coaching book (PDF)
+        </a>
+        — co-authored during my years with the French national team (2011–2017)
+      </li>
     </ul>
   </section>
 </BaseLayout>

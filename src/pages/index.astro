@@ -9,15 +9,18 @@ const projects = (await getCollection('projects', ({ data }) => !data.draft))
   .slice(0, 3);
 ---
 
-<BaseLayout title="Portfolio — Developer, Musician, Teacher">
+<BaseLayout
+  title="Eric Maniez — Developer, Musician, Teacher"
+  description="Creative spirit, at the intersection of art & technology."
+>
   <section class="mb-16">
-    <p class="font-mono text-xs uppercase tracking-widest text-[color:var(--color-ink-muted)]">Hello —</p>
+    <p class="font-mono text-xs uppercase tracking-widest text-[color:var(--color-ink-muted)]">Lyon, France</p>
     <h1 class="mt-2 text-4xl font-semibold leading-tight sm:text-5xl">
-      I build software, make music, and teach.
+      Creative spirit, at the intersection of art & technology.
     </h1>
     <p class="mt-6 max-w-xl text-lg text-[color:var(--color-ink-muted)]">
-      A home for the three threads I keep pulling on. Some code, some sound, some ideas
-      shared with students. Poke around.
+      Software developer, music teacher, artist. I help people accomplish their
+      creative and entrepreneurial vision — whatever the field.
     </p>
     <div class="mt-8 flex flex-wrap gap-4 text-sm">
       <a href="/projects/" class="no-underline rounded-md border border-[color:var(--color-accent)] px-4 py-2 text-[color:var(--color-accent)] hover:bg-[color:var(--color-accent)] hover:text-white">
