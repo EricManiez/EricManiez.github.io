@@ -1,0 +1,54 @@
+---
+import { getCollection } from 'astro:content';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import ProjectCard from '../../components/ProjectCard.astro';
+import { t } from '../../i18n/strings';
+
+const locale = 'en';
+const projects = (await getCollection('projects', ({ id, data }) =>
+  !data.draft && id.startsWith(`${locale}/`)
+))
+  .filter((p) => p.data.featured)
+  .sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf())
+  .slice(0, 3);
+---
+
+<BaseLayout
+  title="Eric Maniez — Developer, Musician, Teacher"
+  description={t(locale, 'home.headline')}
+>
+  <section class="mb-16">
+    <p class="font-mono text-xs uppercase tracking-widest text-[color:var(--color-ink-muted)]">
+      {t(locale, 'home.location')}
+    </p>
+    <h1 class="mt-2 text-4xl font-semibold leading-tight sm:text-5xl">
+      {t(locale, 'home.headline')}
+    </h1>
+    <p class="mt-6 max-w-xl text-lg text-[color:var(--color-ink-muted)]">
+      {t(locale, 'home.intro')}
+    </p>
+    <div class="mt-8 flex flex-wrap gap-4 text-sm">
+      <a href={`/${locale}/projects/`} class="no-underline rounded-md border border-[color:var(--color-accent)] px-4 py-2 text-[color:var(--color-accent)] hover:bg-[color:var(--color-accent)] hover:text-white">
+        {t(locale, 'home.cta.projects')}
+      </a>
+      <a href={`/${locale}/music/`} class="no-underline rounded-md border border-black/20 px-4 py-2 text-[color:var(--color-ink)] hover:border-[color:var(--color-accent)]">
+        {t(locale, 'home.cta.music')}
+      </a>
+      <a href={`/${locale}/teaching/`} class="no-underline rounded-md border border-black/20 px-4 py-2 text-[color:var(--color-ink)] hover:border-[color:var(--color-accent)]">
+        {t(locale, 'home.cta.teaching')}
+      </a>
+    </div>
+  </section>
+
+  {projects.length > 0 && (
+    <section>
+      <div class="flex items-baseline justify-between mb-4">
+        <h2 class="text-xl font-semibold">{t(locale, 'home.featured')}</h2>
+        <a href={`/${locale}/projects/`} class="text-sm">{t(locale, 'home.allProjects')}</a>
+      </div>
+      <div class="grid gap-4">
+        {projects.map((project) => <ProjectCard project={project} />)}
+      </div>
+    </section>
+  )}
+</BaseLayout>

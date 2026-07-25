@@ -1,36 +1,53 @@
 ---
+import { t, locales, localeNames, defaultLocale, type Locale } from '../i18n/strings';
+
+const locale = (Astro.currentLocale ?? defaultLocale) as Locale;
+const otherLocale = locales.find((l) => l !== locale)!;
+
 const links = [
-  { href: '/', label: 'Home' },
-  { href: '/projects/', label: 'Projects' },
-  { href: '/music/', label: 'Music' },
-  { href: '/teaching/', label: 'Teaching' },
-  { href: '/about/', label: 'About' },
+  { href: `/${locale}/projects/`, label: t(locale, 'nav.projects'), match: '/projects' },
+  { href: `/${locale}/music/`,    label: t(locale, 'nav.music'),    match: '/music' },
+  { href: `/${locale}/teaching/`, label: t(locale, 'nav.teaching'), match: '/teaching' },
+  { href: `/${locale}/about/`,    label: t(locale, 'nav.about'),    match: '/about' },
 ];
 
+// Swap the current URL's locale segment for the other locale.
 const path = Astro.url.pathname;
-const isActive = (href: string) =>
-  href === '/' ? path === '/' : path.startsWith(href);
+const otherPath = path.replace(new RegExp(`^/${locale}(/|$)`), `/${otherLocale}$1`);
+
+const isActive = (match: string) => path.includes(match);
 ---
 
 <header class="border-b border-black/10">
   <nav class="mx-auto flex max-w-3xl items-center justify-between px-6 py-5">
-    <a href="/" class="font-mono text-sm font-semibold no-underline text-[color:var(--color-ink)]">
+    <a href={`/${locale}/`} class="font-mono text-sm font-semibold no-underline text-[color:var(--color-ink)]">
       /portfolio
     </a>
-    <ul class="flex gap-5 text-sm">
-      {links.slice(1).map(({ href, label }) => (
+    <ul class="flex items-center gap-5 text-sm">
+      {links.map(({ href, label, match }) => (
         <li>
           <a
             href={href}
             class:list={[
               'no-underline text-[color:var(--color-ink-muted)] hover:text-[color:var(--color-accent)]',
-              isActive(href) && 'text-[color:var(--color-accent)] font-medium',
+              isActive(match) && 'text-[color:var(--color-accent)] font-medium',
             ]}
           >
             {label}
           </a>
         </li>
       ))}
+      <li aria-hidden="true" class="text-[color:var(--color-ink-muted)]/40">|</li>
+      <li>
+        <a
+          href={otherPath}
+          hreflang={otherLocale}
+          class="no-underline font-mono text-xs uppercase tracking-wider text-[color:var(--color-ink-muted)] hover:text-[color:var(--color-accent)]"
+          aria-label={`Switch to ${localeNames[otherLocale]}`}
+        >
+          {otherLocale.toUpperCase()}
+        </a>
+      </li>
     </ul>
   </nav>
 </header>

@@ -1,0 +1,44 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { t } from '../../i18n/strings';
+const locale = 'fr';
+---
+
+<BaseLayout
+  title="À propos — Eric Maniez"
+  description="Développeur logiciel, professeur de musique et artiste, basé à Lyon."
+>
+  <h1 class="text-3xl font-semibold">{t(locale, 'about.title')}</h1>
+  <p class="mt-2 font-mono text-xs uppercase tracking-widest text-[color:var(--color-ink-muted)]">
+    Lyon, France
+  </p>
+
+  <section class="prose prose-slate mt-6 max-w-none">
+    <p class="lead">
+      Esprit créatif, à la croisée de l’art et de la technologie.
+    </p>
+
+    <p>
+      Développeur logiciel, professeur de musique et artiste, je prends autant
+      de fierté que de plaisir à accompagner celles et ceux qui portent une
+      vision créative ou entrepreneuriale, quel qu’en soit le domaine. J’ai
+      été consultant logiciel, coach d’une équipe de France, et enseignant
+      dans des écoles de musique aussi bien associatives que d’excellence :
+      je serai heureux de vous accompagner dans votre prochain défi.
+    </p>
+
+    <h2 id="contact">{t(locale, 'about.contact')}</h2>
+    <ul>
+      <li>Email : <a href="mailto:maniez.eric@gmail.com">maniez.eric@gmail.com</a></li>
+      <li>GitHub : <a href="https://github.com/EricManiez">github.com/EricManiez</a></li>
+      <li>Bandcamp : <a href="https://leavethebiker.bandcamp.com">leavethebiker.bandcamp.com</a></li>
+      <li>Spotify : <a href="https://open.spotify.com/album/5bXBsC4Tix3zIjXnqZlp2L">Album sur Spotify</a></li>
+      <li>
+        <a href="https://drive.google.com/file/d/0BxJtsT7YpRR6emRYQzZqTWN5d2c/view?usp=sharing&resourcekey=0-QdofO4-webuwe5YwY5D0lA">
+          Livre d’entraînement — Ultimate frisbee (PDF)
+        </a>
+        — co-écrit durant mes années avec l’équipe de France (2011–2017)
+      </li>
+    </ul>
+  </section>
+</BaseLayout>

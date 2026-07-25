@@ -3,6 +3,7 @@ import '../styles/global.css';
 import SEO from '../components/SEO.astro';
 import Nav from '../components/Nav.astro';
 import Footer from '../components/Footer.astro';
+import { defaultLocale, type Locale } from '../i18n/strings';
 
 interface Props {
   title: string;
@@ -11,10 +12,11 @@ interface Props {
 }
 
 const { title, description, image } = Astro.props;
+const locale = (Astro.currentLocale ?? defaultLocale) as Locale;
 ---
 
 <!doctype html>
-<html lang="en">
+<html lang={locale}>
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />

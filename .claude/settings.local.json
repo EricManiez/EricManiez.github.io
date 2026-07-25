@@ -12,7 +12,13 @@
       "Bash(rtk gh *)",
       "Bash(rtk brew *)",
       "Bash(rtk ssh *)",
-      "Bash(rtk git *)"
+      "Bash(rtk git *)",
+      "Bash(rtk grep *)",
+      "Bash(rtk curl *)",
+      "Bash(rtk rmdir *)",
+      "Bash(rtk mv *)",
+      "Bash(rtk mkdir *)",
+      "Bash(rtk head *)"
     ]
   }
 }

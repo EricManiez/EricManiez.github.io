@@ -1,5 +1,6 @@
 ---
 import type { CollectionEntry } from 'astro:content';
+import { defaultLocale, type Locale } from '../i18n/strings';
 
 interface Props {
   project: CollectionEntry<'projects'>;
@@ -8,10 +9,13 @@ interface Props {
 const { project } = Astro.props;
 const { title, summary, tags, date } = project.data;
 const dateStr = date.toISOString().slice(0, 10);
+const locale = (Astro.currentLocale ?? defaultLocale) as Locale;
+// project.id is e.g. "en/hello-world" — strip the locale prefix for the URL slug.
+const slug = project.id.replace(/^[a-z]{2}\//, '');
 ---
 
 <article class="group border border-black/10 rounded-lg p-5 transition hover:border-[color:var(--color-accent)]">
-  <a href={`/projects/${project.id}/`} class="no-underline text-[color:var(--color-ink)]">
+  <a href={`/${locale}/projects/${slug}/`} class="no-underline text-[color:var(--color-ink)]">
     <div class="flex items-baseline justify-between gap-4">
       <h3 class="text-lg font-semibold group-hover:text-[color:var(--color-accent)]">{title}</h3>
       <time class="text-xs text-[color:var(--color-ink-muted)] font-mono shrink-0">{dateStr}</time>

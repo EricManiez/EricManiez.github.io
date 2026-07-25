@@ -1,4 +1,6 @@
 ---
+import { locales, defaultLocale, type Locale } from '../i18n/strings';
+
 interface Props {
   title: string;
   description?: string;
@@ -6,18 +8,36 @@ interface Props {
 }
 
 const { title, description = 'Developer, musician, and teacher.', image } = Astro.props;
+const locale = (Astro.currentLocale ?? defaultLocale) as Locale;
 const canonicalURL = new URL(Astro.url.pathname, Astro.site);
 const ogImage = image ? new URL(image, Astro.site).toString() : undefined;
+
+// hreflang alternates: swap the current locale segment for each locale.
+const path = Astro.url.pathname;
+const alternates = locales.map((l) => {
+  const altPath = path.replace(new RegExp(`^/${locale}(/|$)`), `/${l}$1`);
+  return { locale: l, url: new URL(altPath, Astro.site).toString() };
+});
+const defaultAlt = alternates.find((a) => a.locale === defaultLocale)!;
 ---
 
 <title>{title}</title>
 <meta name="description" content={description} />
 <link rel="canonical" href={canonicalURL} />
 
+{alternates.map(({ locale: l, url }) => (
+  <link rel="alternate" hreflang={l} href={url} />
+))}
+<link rel="alternate" hreflang="x-default" href={defaultAlt.url} />
+
 <meta property="og:type" content="website" />
 <meta property="og:title" content={title} />
 <meta property="og:description" content={description} />
 <meta property="og:url" content={canonicalURL} />
+<meta property="og:locale" content={locale === 'fr' ? 'fr_FR' : 'en_US'} />
+{alternates.filter((a) => a.locale !== locale).map(({ locale: l }) => (
+  <meta property="og:locale:alternate" content={l === 'fr' ? 'fr_FR' : 'en_US'} />
+))}
 {ogImage && <meta property="og:image" content={ogImage} />}
 
 <meta name="twitter:card" content="summary_large_image" />

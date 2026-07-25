@@ -1,12 +1,17 @@
 ---
 import { getCollection, render } from 'astro:content';
 import type { GetStaticPaths } from 'astro';
-import BaseLayout from '../../layouts/BaseLayout.astro';
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+import { t } from '../../../i18n/strings';
+
+const locale = 'fr';
 
 export const getStaticPaths = (async () => {
-  const projects = await getCollection('projects', ({ data }) => !data.draft);
+  const projects = await getCollection('projects', ({ id, data }) =>
+    !data.draft && id.startsWith('fr/')
+  );
   return projects.map((project) => ({
-    params: { slug: project.id },
+    params: { slug: project.id.slice('fr/'.length) },
     props: { project },
   }));
 }) satisfies GetStaticPaths;
@@ -17,8 +22,8 @@ const { title, summary, date, tags, repo, url, cover } = project.data;
 const dateStr = date.toISOString().slice(0, 10);
 ---
 
-<BaseLayout title={`${title} — Projects`} description={summary} image={cover}>
-  <a href="/projects/" class="text-sm">← All projects</a>
+<BaseLayout title={`${title} — ${t(locale, 'projects.title')}`} description={summary} image={cover}>
+  <a href={`/${locale}/projects/`} class="text-sm">{t(locale, 'projects.back')}</a>
 
   <header class="mt-6 border-b border-black/10 pb-6">
     <h1 class="text-3xl font-semibold">{title}</h1>
@@ -29,8 +34,8 @@ const dateStr = date.toISOString().slice(0, 10);
     </div>
     {(repo || url) && (
       <div class="mt-4 flex gap-4 text-sm">
-        {url && <a href={url} target="_blank" rel="noopener">Visit ↗</a>}
-        {repo && <a href={repo} target="_blank" rel="noopener">Source ↗</a>}
+        {url && <a href={url} target="_blank" rel="noopener">{t(locale, 'projects.visit')}</a>}
+        {repo && <a href={repo} target="_blank" rel="noopener">{t(locale, 'projects.source')}</a>}
       </div>
     )}
   </header>
