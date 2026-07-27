@@ -1,8 +1,7 @@
 {
-  "scrapedAt": "2026-07-27T14:28:28.645Z",
+  "scrapedAt": null,
   "source": "https://www.cyclingcols.com/athlete/eric/cols/all/europe",
-  "strategy": "cards",
-  "tableRowCount": 0,
-  "cardCount": 0,
-  "climbs": []
+  "eventCount": 0,
+  "uniqueColCount": 0,
+  "uniqueCols": []
 }

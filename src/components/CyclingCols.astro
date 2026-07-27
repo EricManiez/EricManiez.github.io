@@ -19,8 +19,6 @@ interface Col {
   slug?: string;
   country?: string | null;
   times: number;
-  firstDate?: string | null;
-  lastDate?: string | null;
 }
 
 const hasScraped = scraped
@@ -28,32 +26,7 @@ const hasScraped = scraped
   && scraped.uniqueCols.length > 0;
 
 const uniqueCols: Col[] = hasScraped ? scraped.uniqueCols : [];
-const totalClimbs = hasScraped ? (scraped.eventCount ?? scraped.events?.length ?? 0) : 0;
-
-// Year range from all events.
-let yearRange = '';
-if (hasScraped && Array.isArray(scraped.events) && scraped.events.length > 0) {
-  const years = scraped.events
-    .map((e: any) => (e.date && /^\d{4}/.test(e.date)) ? Number(e.date.slice(0, 4)) : null)
-    .filter((y: number | null) => y != null)
-    .sort((a: number, b: number) => a - b);
-  if (years.length > 0) {
-    yearRange = years[0] === years[years.length - 1]
-      ? String(years[0])
-      : `${years[0]} → ${years[years.length - 1]}`;
-  }
-}
-
-function fmtDate(iso?: string | null) {
-  if (!iso || !/^\d{4}-\d{2}-\d{2}$/.test(iso)) return '';
-  const [y, m] = iso.split('-');
-  const monthNames = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
-  return `${monthNames[Number(m) - 1]} ${y}`;
-}
-
-const scrapedAtIso = hasScraped && scraped?.scrapedAt
-  ? new Date(scraped.scrapedAt).toISOString().slice(0, 10)
-  : null;
+const totalClimbs = hasScraped ? (scraped.eventCount ?? 0) : 0;
 ---
 
 {hasScraped ? (
@@ -61,7 +34,6 @@ const scrapedAtIso = hasScraped && scraped?.scrapedAt
     <div class="climbs-summary">
       <span class="stat"><span class="stat-num">{uniqueCols.length}</span> cols climbed</span>
       <span class="stat"><span class="stat-num">{totalClimbs}</span> ascents</span>
-      {yearRange && <span class="stat">{yearRange}</span>}
     </div>
 
     <ul class="climbs-grid">
@@ -71,19 +43,14 @@ const scrapedAtIso = hasScraped && scraped?.scrapedAt
             <span class="col-name">{c.name}</span>
             {c.country && <span class="col-country">{c.country}</span>}
           </div>
-          <div class="col-card-meta">
-            {c.times > 1 && <span class="col-times">{c.times}×</span>}
-            {c.lastDate && <span class="col-date">{fmtDate(c.lastDate)}</span>}
-          </div>
+          {c.times > 1 && (
+            <div class="col-card-meta">
+              <span class="col-times">{c.times}×</span>
+            </div>
+          )}
         </li>
       ))}
     </ul>
-
-    {scrapedAtIso && (
-      <p class="climbs-note">
-        Data synced from CyclingCols on {scrapedAtIso}.
-      </p>
-    )}
   </div>
 ) : (
   <div class="climbs">
@@ -176,7 +143,6 @@ const scrapedAtIso = hasScraped && scraped?.scrapedAt
     gap: 0.6rem;
     font-family: var(--font-mono, ui-monospace, monospace);
     font-size: 0.7rem;
-    color: var(--color-ink-muted, #475569);
     white-space: nowrap;
   }
   .col-times {
@@ -224,11 +190,4 @@ const scrapedAtIso = hasScraped && scraped?.scrapedAt
     white-space: nowrap;
   }
 
-  .climbs-note {
-    margin-top: 0.75rem;
-    font-family: var(--font-mono, ui-monospace, monospace);
-    font-size: 0.7rem;
-    color: var(--color-ink-muted, #475569);
-    letter-spacing: 0.02em;
-  }
 </style>

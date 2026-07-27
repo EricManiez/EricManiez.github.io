@@ -95,20 +95,10 @@ try {
 
   // Extract each climb event. The page is a vertical stack of `card-body`
   // blocks; every `<a href="/col/...">` outside the footer's "popular cols"
-  // list is one climb entry. Its containing row also carries the date, the
-  // country flag, and (when present) a Strava activity link.
+  // list is one climb entry. We deliberately DO NOT extract dates or Strava
+  // activity URLs — the site displays "N times climbed" without tracking
+  // when.
   const climbs = await page.evaluate(() => {
-    const months = { jan: 1, feb: 2, mar: 3, apr: 4, may: 5, jun: 6,
-                     jul: 7, aug: 8, sep: 9, oct: 10, nov: 11, dec: 12 };
-    const parseDate = (s) => {
-      if (!s) return null;
-      const m = s.match(/(\d{1,2})\s+([A-Za-z]{3,})\s+(\d{4})/);
-      if (!m) return s;
-      const mo = months[m[2].slice(0, 3).toLowerCase()];
-      if (!mo) return s;
-      return `${m[3]}-${String(mo).padStart(2, '0')}-${String(parseInt(m[1], 10)).padStart(2, '0')}`;
-    };
-
     const out = [];
     document.querySelectorAll('a[href^="/col/"]').forEach((a) => {
       // Skip anchors inside the footer's "Most popular cols" list.
@@ -117,47 +107,32 @@ try {
       const name = a.textContent.trim().replace(/\s+/g, ' ');
       const slug = a.getAttribute('href').replace(/^\/col\//, '').replace(/\/$/, '');
 
-      // Walk up until we find an ancestor that also contains a date (.text-nowrap).
+      // Walk up a few levels to find a row-like ancestor with a flag icon.
       let row = a.parentElement;
       for (let i = 0; i < 6 && row; i++) {
-        if (row.querySelector('.text-nowrap')) break;
+        if (row.querySelector('img.cc-flag-xs, img.cc-flag-sm')) break;
         row = row.parentElement;
       }
-
-      const dateEl   = row?.querySelector('.text-nowrap');
-      const flagEl   = row?.querySelector('img.cc-flag-xs, img.cc-flag-sm')
-                     ?? a.parentElement?.querySelector('img.cc-flag-xs, img.cc-flag-sm');
-      const stravaEl = row?.querySelector('a[href*="strava.com/activities/"]');
-      const badgeEl  = row?.querySelector('.cc-badge-new');
+      const flagEl = row?.querySelector('img.cc-flag-xs, img.cc-flag-sm')
+                   ?? a.parentElement?.querySelector('img.cc-flag-xs, img.cc-flag-sm');
 
       out.push({
         name,
         slug,
         country: (flagEl?.getAttribute('alt') || '').trim() || null,
-        date: parseDate(dateEl?.textContent.trim() || ''),
-        stravaUrl: stravaEl?.getAttribute('href') || null,
-        firstTime: !!badgeEl,
       });
     });
     return out;
   });
 
-  // Aggregate: unique cols with a count of climbs and the first/last dates.
+  // Aggregate: unique cols with a count of climbs. No dates tracked.
   const byCol = new Map();
   for (const ev of climbs) {
     const key = ev.slug || ev.name;
     if (!byCol.has(key)) {
-      byCol.set(key, {
-        name: ev.name, slug: ev.slug, country: ev.country,
-        times: 0, firstDate: null, lastDate: null,
-      });
+      byCol.set(key, { name: ev.name, slug: ev.slug, country: ev.country, times: 0 });
     }
-    const agg = byCol.get(key);
-    agg.times += 1;
-    if (ev.date) {
-      if (!agg.firstDate || ev.date < agg.firstDate) agg.firstDate = ev.date;
-      if (!agg.lastDate  || ev.date > agg.lastDate)  agg.lastDate  = ev.date;
-    }
+    byCol.get(key).times += 1;
   }
   const uniqueCols = Array.from(byCol.values())
     .sort((a, b) => (b.times - a.times) || a.name.localeCompare(b.name));
@@ -169,7 +144,6 @@ try {
     source: profileUrl,
     eventCount: climbs.length,
     uniqueColCount: uniqueCols.length,
-    events: climbs,
     uniqueCols,
   }, null, 2), 'utf8');
   console.log(`Wrote ${outJson}`);
