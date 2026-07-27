@@ -15,6 +15,10 @@ pnpm-debug.log*
 .env
 .env.production
 
+# Scraper debug output (contains raw HTML of the user's private CyclingCols
+# dashboard — never commit).
+src/data/cyclingcols.raw.html
+
 # macOS
 .DS_Store
 
