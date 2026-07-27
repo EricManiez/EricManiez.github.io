@@ -153,9 +153,16 @@ try {
           const n = parseFloat(s.replace(/\u00a0/g, ' ').replace(/[^\d.,]/g, '').replace(',', '.'));
           return Number.isFinite(n) ? n : null;
         };
-        const distEls  = document.querySelectorAll('.cc-stat-badge[title="Distance"] .cc-stat-value');
-        const gainEls  = document.querySelectorAll('.cc-stat-badge[title="Elevation Gain"] .cc-stat-value');
-        const slopeEls = document.querySelectorAll('.cc-stat-badge[title="Average Slope"] .cc-stat-value');
+        // Bootstrap's tooltip JS moves the `title` attribute into
+        // `data-bs-original-title` after init, so we match both.
+        const byLabel = (label) =>
+          document.querySelectorAll(
+            `.cc-stat-badge[title="${label}"] .cc-stat-value, ` +
+            `.cc-stat-badge[data-bs-original-title="${label}"] .cc-stat-value`
+          );
+        const distEls  = byLabel('Distance');
+        const gainEls  = byLabel('Elevation Gain');
+        const slopeEls = byLabel('Average Slope');
         const routes = [];
         for (let i = 0; i < distEls.length; i++) {
           const d = num(distEls[i]?.textContent);
