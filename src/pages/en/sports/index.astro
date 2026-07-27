@@ -1,0 +1,15 @@
+---
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+import SportsShowcase from '../../../components/SportsShowcase.astro';
+import { t } from '../../../i18n/strings';
+
+const locale = 'en';
+---
+
+<BaseLayout
+  title={`${t(locale, 'sports.title')} — Eric Maniez`}
+  description={t(locale, 'sports.subtitle')}
+  wide
+>
+  <SportsShowcase locale={locale} />
+</BaseLayout>

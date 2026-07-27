@@ -1,0 +1,52 @@
+---
+import { getCollection, render } from 'astro:content';
+import Showcase, { type Panel } from './Showcase.astro';
+import { t, type Locale } from '../i18n/strings';
+
+interface Props {
+  locale: Locale;
+}
+
+const { locale } = Astro.props;
+const ongoingLabel = t(locale, 'sports.ongoing');
+
+const entries = (await getCollection('sports', ({ id, data }) =>
+  !data.draft && id.startsWith(`${locale}/`)
+)).sort((a, b) => a.data.order - b.data.order);
+
+const panels: Panel[] = await Promise.all(
+  entries.map(async (entry) => {
+    const { Content } = await render(entry);
+    return {
+      slug: entry.id.replace(/^[a-z]{2}\//, ''),
+      title: entry.data.title,
+      meta1: entry.data.years,
+      meta2: entry.data.category,
+      role: entry.data.role,
+      accent: entry.data.accent,
+      badges: entry.data.ongoing ? [ongoingLabel] : undefined,
+      tags: entry.data.tags,
+      link: entry.data.link,
+      Content,
+    };
+  })
+);
+---
+
+<section class="mb-8">
+  <p class="font-mono text-xs uppercase tracking-widest text-[color:var(--color-ink-muted,#475569)]">
+    {t(locale, 'sports.title')}
+  </p>
+  <h1 class="mt-1 text-3xl font-semibold sm:text-4xl text-[color:var(--color-ink,#0f172a)]">
+    {t(locale, 'sports.subtitle')}
+  </h1>
+</section>
+
+<Showcase
+  panels={panels}
+  emptyLabel={t(locale, 'sports.empty')}
+  kbdHint={t(locale, 'sports.kbdHint')}
+  swipeHint={t(locale, 'sports.swipeHint')}
+  prevLabel={t(locale, 'sports.prev')}
+  nextLabel={t(locale, 'sports.next')}
+/>

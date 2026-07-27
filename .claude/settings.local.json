@@ -41,7 +41,13 @@
       "Bash(node shot.mjs http://localhost:4321/en/music/ /tmp/music.png)",
       "Bash(node *)",
       "Bash(pkill -f \"astro dev\")",
-      "Bash(curl -sIL -o /dev/null -w \"%{http_code}\\\\n\" https://ericmaniez.github.io/fr/oddities/)"
+      "Bash(curl -sIL -o /dev/null -w \"%{http_code}\\\\n\" https://ericmaniez.github.io/fr/oddities/)",
+      "Bash(curl -sIL -o /dev/null -w \"fr %{http_code}\\\\n\" https://ericmaniez.github.io/fr/engineering/)",
+      "Bash(curl -sI https://www.cyclingcols.com/athlete/eric)",
+      "Bash(grep -iE '^\\(HTTP|x-frame|content-security|content-type|last-modified\\)' echo \"---\" curl -s https://www.cyclingcols.com/athlete/eric wc -l /tmp/cc.html)",
+      "Bash(curl -s -A \"Mozilla/5.0\" -L https://www.cyclingcols.com/athlete/eric wc -l /tmp/cc.html head -c 300 /tmp/cc.html echo \"\" echo \"---headers---\" curl -sI -A \"Mozilla/5.0\" -X GET https://www.cyclingcols.com/athlete/eric)",
+      "Bash(curl -sI -A \"Mozilla/5.0\" -X GET https://www.cyclingcols.com/athlete/eric)",
+      "Bash(curl -s -o /dev/null -w '%{http_code}' -A Mozilla/5.0 https://www.cyclingcols.com__TRACKED_VAR__)"
     ]
   }
 }

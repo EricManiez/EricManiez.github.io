@@ -100,4 +100,26 @@ const engineering = defineCollection({
   }),
 });
 
-export const collections = { projects, music, oddities, engineering };
+const sports = defineCollection({
+  loader: glob({ pattern: '**/*.{md,mdx}', base: './src/content/sports' }),
+  schema: z.object({
+    title: z.string(),
+    years: z.string(),
+    category: z.string(),
+    role: z.string(),
+    order: z.number(),
+    accent: z.string(),
+    ongoing: z.boolean().default(false),
+    tags: z.array(z.string()).optional(),
+    link: z
+      .object({
+        label: z.string(),
+        url: z.string().url(),
+      })
+      .optional(),
+    summary: z.string().optional(),
+    draft: z.boolean().default(false),
+  }),
+});
+
+export const collections = { projects, music, oddities, engineering, sports };
