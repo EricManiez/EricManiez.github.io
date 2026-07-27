@@ -53,12 +53,15 @@ const rows = cols.map((c, i) => ({
       <table class="climbs-table">
         <thead>
           <tr>
-            <th data-key="name"     data-type="text">Col</th>
-            <th data-key="distance" data-type="num">Distance</th>
-            <th data-key="gain"     data-type="num">Gain</th>
-            <th data-key="avgslope" data-type="num">Avg slope</th>
-            <th data-key="country"  data-type="text">Country</th>
-            <th data-key="times"    data-type="num" data-active="desc">Reps</th>
+            <th class="th-stacked">
+              <button type="button" class="th-btn" data-key="name"      data-type="text">Col</button>
+              <button type="button" class="th-btn th-btn-sub" data-key="elevation" data-type="num">Alt.</button>
+            </th>
+            <th><button type="button" class="th-btn" data-key="distance" data-type="num">Distance</button></th>
+            <th><button type="button" class="th-btn" data-key="gain"     data-type="num">Gain</button></th>
+            <th><button type="button" class="th-btn" data-key="avgslope" data-type="num">Avg slope</button></th>
+            <th><button type="button" class="th-btn" data-key="country"  data-type="text">Country</button></th>
+            <th><button type="button" class="th-btn" data-key="times"    data-type="num" data-active="desc">Reps</button></th>
           </tr>
         </thead>
         <tbody>
@@ -108,36 +111,55 @@ const rows = cols.map((c, i) => ({
   .climbs-table thead th {
     background: rgb(0 0 0 / 0.02);
     text-align: left;
-    padding: 0.6rem 0.85rem;
+    padding: 0.35rem 0.5rem;
+    border-bottom: 1px solid rgb(0 0 0 / 0.1);
+    white-space: nowrap;
+    vertical-align: bottom;
+  }
+  .th-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+    padding: 0.25rem 0.35rem;
+    background: transparent;
+    border: 0;
+    border-radius: 4px;
+    cursor: pointer;
+    user-select: none;
     font-family: var(--font-mono, ui-monospace, monospace);
     font-size: 0.7rem;
     letter-spacing: 0.08em;
     text-transform: uppercase;
     color: var(--color-ink-muted, #475569);
-    cursor: pointer;
-    user-select: none;
-    border-bottom: 1px solid rgb(0 0 0 / 0.1);
-    white-space: nowrap;
     transition: color 150ms, background 150ms;
   }
-  .climbs-table thead th:hover { color: var(--accent, #d97706); }
-  .climbs-table thead th[data-active] {
+  .th-btn:hover { color: var(--accent, #d97706); }
+  .th-btn[data-active] {
     color: var(--accent, #d97706);
-    background: color-mix(in oklab, var(--accent, #d97706) 6%, transparent);
+    background: color-mix(in oklab, var(--accent, #d97706) 8%, transparent);
   }
-  .climbs-table thead th[data-active]::after {
+  .th-btn[data-active]::after {
     content: '';
     display: inline-block;
-    margin-left: 0.35rem;
     width: 0; height: 0;
     border-left: 4px solid transparent;
     border-right: 4px solid transparent;
     vertical-align: middle;
   }
-  .climbs-table thead th[data-active="asc"]::after  { border-bottom: 5px solid var(--accent, #d97706); }
-  .climbs-table thead th[data-active="desc"]::after { border-top:    5px solid var(--accent, #d97706); }
+  .th-btn[data-active="asc"]::after  { border-bottom: 5px solid var(--accent, #d97706); }
+  .th-btn[data-active="desc"]::after { border-top:    5px solid var(--accent, #d97706); }
 
-  .climbs-table thead th[data-type="num"] { text-align: right; }
+  /* Stacked headers: Col on top, Alt. below (mirrors the data cell). */
+  .th-stacked { padding-bottom: 0.35rem; }
+  .th-stacked .th-btn { display: flex; }
+  .th-btn-sub {
+    margin-top: 2px;
+    font-size: 0.62rem;
+    opacity: 0.9;
+  }
+
+  .climbs-table thead th:has([data-type="num"]) { text-align: right; }
+  .climbs-table thead th:has(.th-btn[data-type="num"]:only-child) { text-align: right; }
   .climbs-table td { padding: 0.5rem 0.85rem; border-top: 1px solid rgb(0 0 0 / 0.05); }
   .climbs-table tbody tr:first-child td { border-top: 0; }
   .climbs-table tbody tr { transition: background 120ms; }
@@ -171,7 +193,7 @@ const rows = cols.map((c, i) => ({
 <script>
   document.querySelectorAll<HTMLElement>('.climbs-table').forEach((table) => {
     const tbody = table.querySelector<HTMLElement>('tbody');
-    const headers = Array.from(table.querySelectorAll<HTMLElement>('thead th[data-key]'));
+    const triggers = Array.from(table.querySelectorAll<HTMLElement>('thead [data-key]'));
     if (!tbody) return;
 
     function sort(key: string, type: string, dir: 'asc' | 'desc') {
@@ -196,17 +218,17 @@ const rows = cols.map((c, i) => ({
       rows.forEach((r) => tbody!.appendChild(r));
     }
 
-    headers.forEach((th) => {
-      th.addEventListener('click', () => {
-        const key = th.dataset.key!;
-        const type = th.dataset.type ?? 'text';
-        const currentDir = th.getAttribute('data-active') as 'asc' | 'desc' | null;
+    triggers.forEach((el) => {
+      el.addEventListener('click', () => {
+        const key = el.dataset.key!;
+        const type = el.dataset.type ?? 'text';
+        const currentDir = el.getAttribute('data-active') as 'asc' | 'desc' | null;
         // Default direction: desc for numbers, asc for text; toggle if already active.
         const nextDir: 'asc' | 'desc' = currentDir
           ? (currentDir === 'asc' ? 'desc' : 'asc')
           : (type === 'num' ? 'desc' : 'asc');
-        headers.forEach((h) => h.removeAttribute('data-active'));
-        th.setAttribute('data-active', nextDir);
+        triggers.forEach((t) => t.removeAttribute('data-active'));
+        el.setAttribute('data-active', nextDir);
         sort(key, type, nextDir);
       });
     });
