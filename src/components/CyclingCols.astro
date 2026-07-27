@@ -8,16 +8,17 @@ interface Col {
   slug?: string;
   country?: string | null;
   times: number;
-  distance?: number | null; // km
-  gain?: number | null;     // meters of elevation gain
-  avgSlope?: number | null; // average slope %
+  elevation?: number | null; // summit meters
+  distance?: number | null;  // km
+  gain?: number | null;      // meters of elevation gain
+  avgSlope?: number | null;  // average slope %
 }
 
 const FALLBACK: Col[] = [
-  { name: 'Col du Galibier',    country: 'FRA', times: 1, distance: 34.8, gain: 2095, avgSlope: 6.0 },
-  { name: 'Col d’Izoard',       country: 'FRA', times: 1, distance: 14.1, gain: 1095, avgSlope: 7.3 },
-  { name: 'Col de la Madeleine', country: 'FRA', times: 1, distance: 25.0, gain: 1540, avgSlope: 6.2 },
-  { name: 'Col du Granon',      country: 'FRA', times: 1, distance: 11.3, gain: 1040, avgSlope: 9.2 },
+  { name: 'Col du Galibier',    country: 'FRA', times: 1, elevation: 2642, distance: 34.8, gain: 2095, avgSlope: 6.0 },
+  { name: 'Col d’Izoard',       country: 'FRA', times: 1, elevation: 2360, distance: 14.1, gain: 1095, avgSlope: 7.3 },
+  { name: 'Col de la Madeleine', country: 'FRA', times: 1, elevation: 2000, distance: 25.0, gain: 1540, avgSlope: 6.2 },
+  { name: 'Col du Granon',      country: 'FRA', times: 1, elevation: 2413, distance: 11.3, gain: 1040, avgSlope: 9.2 },
 ];
 
 // Eager-load the JSON when it exists; empty object otherwise.
@@ -37,6 +38,7 @@ const rows = cols.map((c, i) => ({
   name: c.name,
   country: c.country ?? '',
   times: c.times ?? 0,
+  elevation: c.elevation ?? null,
   distance: c.distance ?? null,
   gain: c.gain ?? null,
   avgSlope: c.avgSlope ?? null,
@@ -65,11 +67,17 @@ const rows = cols.map((c, i) => ({
               data-name={r.name}
               data-country={r.country}
               data-times={r.times}
+              data-elevation={r.elevation ?? ''}
               data-distance={r.distance ?? ''}
               data-gain={r.gain ?? ''}
               data-avgslope={r.avgSlope ?? ''}
             >
-              <td class="c-name">{r.name}</td>
+              <td class="c-name">
+                <div class="c-name-label">{r.name}</div>
+                {r.elevation != null && (
+                  <div class="c-name-alt">{r.elevation.toLocaleString()} m</div>
+                )}
+              </td>
               <td class="c-num">{r.distance != null ? `${r.distance} km` : '—'}</td>
               <td class="c-num">{r.gain != null ? `${r.gain} m` : '—'}</td>
               <td class="c-num">{r.avgSlope != null ? `${r.avgSlope}%` : '—'}</td>
@@ -135,7 +143,19 @@ const rows = cols.map((c, i) => ({
   .climbs-table tbody tr { transition: background 120ms; }
   .climbs-table tbody tr:hover { background: color-mix(in oklab, var(--accent, #d97706) 5%, transparent); }
 
-  .c-name { font-weight: 500; color: var(--color-ink, #0f172a); }
+  .c-name {
+    color: var(--color-ink, #0f172a);
+    padding-top: 0.35rem;
+    padding-bottom: 0.35rem;
+  }
+  .c-name-label { font-weight: 500; line-height: 1.2; }
+  .c-name-alt {
+    margin-top: 0.15rem;
+    font-family: var(--font-mono, ui-monospace, monospace);
+    font-size: 0.7rem;
+    color: var(--color-ink-muted, #475569);
+    letter-spacing: 0.02em;
+  }
   .c-num  { text-align: right; font-family: var(--font-mono, ui-monospace, monospace); font-variant-numeric: tabular-nums; }
   .c-country {
     font-family: var(--font-mono, ui-monospace, monospace);

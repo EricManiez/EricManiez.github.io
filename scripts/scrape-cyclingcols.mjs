@@ -160,6 +160,10 @@ try {
             `.cc-stat-badge[title="${label}"] .cc-stat-value, ` +
             `.cc-stat-badge[data-bs-original-title="${label}"] .cc-stat-value`
           );
+
+        // Summit elevation: the first "Elevation" badge (one per col).
+        const elevation = num(byLabel('Elevation')[0]?.textContent);
+
         const distEls  = byLabel('Distance');
         const gainEls  = byLabel('Elevation Gain');
         const slopeEls = byLabel('Average Slope');
@@ -170,22 +174,25 @@ try {
           const s = num(slopeEls[i]?.textContent);
           if (d != null) routes.push({ distance: d, gain: g, avgSlope: s });
         }
-        if (routes.length === 0) return { distance: null, gain: null, avgSlope: null };
+        if (routes.length === 0) return { elevation, distance: null, gain: null, avgSlope: null };
         // Steepest route = highest average slope. Ties broken by longer distance.
-        return routes.reduce((a, b) => {
+        const route = routes.reduce((a, b) => {
           const as = a.avgSlope ?? -Infinity;
           const bs = b.avgSlope ?? -Infinity;
           if (bs !== as) return bs > as ? b : a;
           return (b.distance ?? 0) > (a.distance ?? 0) ? b : a;
         });
+        return { elevation, ...route };
       });
+      col.elevation = stats.elevation;
       col.distance = stats.distance;
       col.gain = stats.gain;
       col.avgSlope = stats.avgSlope;
-      const d = stats.distance != null ? `${stats.distance} km` : '?';
-      const g = stats.gain     != null ? `${stats.gain} m gain` : '?';
-      const s = stats.avgSlope != null ? `${stats.avgSlope}%`   : '?';
-      console.log(`  ${col.name.padEnd(28)}  ${d.padStart(9)}  ${g.padStart(11)}  ${s.padStart(6)}`);
+      const e = stats.elevation != null ? `${stats.elevation} m` : '?';
+      const d = stats.distance  != null ? `${stats.distance} km` : '?';
+      const g = stats.gain      != null ? `${stats.gain} m gain` : '?';
+      const s = stats.avgSlope  != null ? `${stats.avgSlope}%`   : '?';
+      console.log(`  ${col.name.padEnd(28)}  ${e.padStart(8)}  ${d.padStart(9)}  ${g.padStart(11)}  ${s.padStart(6)}`);
     } catch (err) {
       console.warn(`  ${col.name}: failed (${err.message.split('\n')[0]})`);
       col.distance = null;
