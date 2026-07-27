@@ -71,4 +71,33 @@ const oddities = defineCollection({
   }),
 });
 
-export const collections = { projects, music, oddities };
+const engineering = defineCollection({
+  loader: glob({ pattern: '**/*.{md,mdx}', base: './src/content/engineering' }),
+  schema: z.object({
+    title: z.string(),
+    years: z.string(),
+    category: z.string(),
+    role: z.string(),
+    order: z.number(),
+    accent: z.string(),
+    ongoing: z.boolean().default(false),
+    stack: z.array(z.string()).optional(),
+    embed: z
+      .object({
+        provider: z.enum(['bandcamp', 'soundcloud', 'spotify', 'youtube']),
+        url: z.string().url(),
+        height: z.number().optional(),
+      })
+      .optional(),
+    link: z
+      .object({
+        label: z.string(),
+        url: z.string().url(),
+      })
+      .optional(),
+    summary: z.string().optional(),
+    draft: z.boolean().default(false),
+  }),
+});
+
+export const collections = { projects, music, oddities, engineering };

@@ -40,7 +40,8 @@
       "Bash(node /tmp/shot.mjs http://localhost:4321/en/music/ /tmp/music.png)",
       "Bash(node shot.mjs http://localhost:4321/en/music/ /tmp/music.png)",
       "Bash(node *)",
-      "Bash(pkill -f \"astro dev\")"
+      "Bash(pkill -f \"astro dev\")",
+      "Bash(curl -sIL -o /dev/null -w \"%{http_code}\\\\n\" https://ericmaniez.github.io/fr/oddities/)"
     ]
   }
 }

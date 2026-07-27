@@ -10,6 +10,7 @@ export interface Panel {
   role: string;
   accent: string;
   badges?: string[];
+  tags?: string[];
   embed?: {
     provider: 'bandcamp' | 'soundcloud' | 'spotify' | 'youtube';
     url: string;
@@ -76,6 +77,12 @@ const firstAccent = panels[0]?.accent ?? '#d97706';
 
           <h2 class="panel-title">{p.title}</h2>
           <p class="panel-role">{p.role}</p>
+
+          {p.tags && p.tags.length > 0 && (
+            <ul class="panel-tags">
+              {p.tags.map((tag) => <li class="panel-tag">{tag}</li>)}
+            </ul>
+          )}
 
           <div class="prose prose-slate max-w-none panel-prose">
             <p.Content />
@@ -262,6 +269,26 @@ const firstAccent = panels[0]?.accent ?? '#d97706';
     font-family: var(--font-mono, ui-monospace, monospace);
     font-size: 0.85rem;
     color: var(--ink-muted);
+  }
+  .panel-tags {
+    margin-top: 1rem;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+    list-style: none;
+    padding: 0;
+  }
+  .panel-tag {
+    display: inline-block;
+    padding: 0.2rem 0.6rem;
+    border-radius: 999px;
+    border: 1px solid color-mix(in oklab, var(--accent) 40%, transparent);
+    background: color-mix(in oklab, var(--accent) 6%, transparent);
+    font-family: var(--font-mono, ui-monospace, monospace);
+    font-size: 0.7rem;
+    color: var(--ink);
+    letter-spacing: 0.02em;
+    transition: border-color var(--transition), background var(--transition);
   }
   .panel-prose { margin-top: 1.5rem; max-width: 42rem; color: var(--ink); }
   .panel-embed { margin-top: 2rem; }

@@ -5,11 +5,11 @@ const locale = (Astro.currentLocale ?? defaultLocale) as Locale;
 const otherLocale = locales.find((l) => l !== locale)!;
 
 const links = [
-  { href: `/${locale}/projects/`, label: t(locale, 'nav.projects'), match: '/projects' },
-  { href: `/${locale}/music/`,    label: t(locale, 'nav.music'),    match: '/music' },
-  { href: `/${locale}/oddities/`, label: t(locale, 'nav.oddities'), match: '/oddities' },
-  { href: `/${locale}/teaching/`, label: t(locale, 'nav.teaching'), match: '/teaching' },
-  { href: `/${locale}/about/`,    label: t(locale, 'nav.about'),    match: '/about' },
+  { href: `/${locale}/engineering/`, label: t(locale, 'nav.engineering'), match: '/engineering' },
+  { href: `/${locale}/music/`,       label: t(locale, 'nav.music'),       match: '/music' },
+  { href: `/${locale}/oddities/`,    label: t(locale, 'nav.oddities'),    match: '/oddities' },
+  { href: `/${locale}/teaching/`,    label: t(locale, 'nav.teaching'),    match: '/teaching' },
+  { href: `/${locale}/about/`,       label: t(locale, 'nav.about'),       match: '/about' },
 ];
 
 // Swap the current URL's locale segment for the other locale.
