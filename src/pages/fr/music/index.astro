@@ -1,24 +1,15 @@
 ---
-import { getCollection } from 'astro:content';
 import BaseLayout from '../../../layouts/BaseLayout.astro';
-import MusicCard from '../../../components/MusicCard.astro';
+import MusicShowcase from '../../../components/MusicShowcase.astro';
 import { t } from '../../../i18n/strings';
 
 const locale = 'fr';
-const tracks = (await getCollection('music', ({ id, data }) =>
-  !data.draft && id.startsWith(`${locale}/`)
-)).sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf());
 ---
 
-<BaseLayout title={`${t(locale, 'music.title')} — Eric Maniez`} description={t(locale, 'music.subtitle')}>
-  <h1 class="text-3xl font-semibold">{t(locale, 'music.title')}</h1>
-  <p class="mt-2 text-[color:var(--color-ink-muted)]">{t(locale, 'music.subtitle')}</p>
-
-  {tracks.length === 0 ? (
-    <p class="mt-8 text-sm text-[color:var(--color-ink-muted)]">{t(locale, 'music.empty')}</p>
-  ) : (
-    <div class="mt-8 grid gap-6">
-      {tracks.map((entry) => <MusicCard entry={entry} />)}
-    </div>
-  )}
+<BaseLayout
+  title={`${t(locale, 'music.title')} — Eric Maniez`}
+  description={t(locale, 'music.subtitle')}
+  wide
+>
+  <MusicShowcase locale={locale} />
 </BaseLayout>

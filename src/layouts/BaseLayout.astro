@@ -9,9 +9,10 @@ interface Props {
   title: string;
   description?: string;
   image?: string;
+  wide?: boolean;
 }
 
-const { title, description, image } = Astro.props;
+const { title, description, image, wide = false } = Astro.props;
 const locale = (Astro.currentLocale ?? defaultLocale) as Locale;
 ---
 
@@ -26,7 +27,10 @@ const locale = (Astro.currentLocale ?? defaultLocale) as Locale;
   </head>
   <body>
     <Nav />
-    <main class="mx-auto w-full max-w-3xl px-6 py-12">
+    <main class:list={[
+      'w-full',
+      wide ? 'mx-auto max-w-6xl px-6 py-12' : 'mx-auto max-w-3xl px-6 py-12',
+    ]}>
       <slot />
     </main>
     <Footer />

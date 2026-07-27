@@ -3,25 +3,28 @@ interface Props {
   provider: 'bandcamp' | 'soundcloud' | 'spotify' | 'youtube';
   embedUrl: string;
   title: string;
+  height?: number;
 }
 
-const { provider, embedUrl, title } = Astro.props;
+const { provider, embedUrl, title, height } = Astro.props;
 
-const config = {
-  bandcamp: { height: '120', allow: '' },
-  soundcloud: { height: '166', allow: 'autoplay' },
-  spotify: { height: '152', allow: 'encrypted-media; autoplay; clipboard-write; picture-in-picture' },
-  youtube: { height: '', allow: 'accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share' },
+const defaults = {
+  bandcamp: { height: 470, allow: '' },
+  soundcloud: { height: 166, allow: 'autoplay' },
+  spotify: { height: 380, allow: 'encrypted-media; autoplay; clipboard-write; picture-in-picture' },
+  youtube: { height: 0, allow: 'accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share' },
 }[provider];
+
+const h = height ?? defaults.height;
 ---
 
 {provider === 'youtube' ? (
-  <div class="relative w-full aspect-video overflow-hidden rounded">
+  <div class="relative w-full aspect-video overflow-hidden rounded-lg shadow-lg ring-1 ring-black/10">
     <iframe
       src={embedUrl}
       title={title}
       loading="lazy"
-      allow={config.allow}
+      allow={defaults.allow}
       allowfullscreen
       class="absolute inset-0 h-full w-full border-0"
     />
@@ -31,8 +34,8 @@ const config = {
     src={embedUrl}
     title={title}
     loading="lazy"
-    allow={config.allow}
-    height={config.height}
-    class="w-full border-0 rounded"
+    allow={defaults.allow}
+    height={h}
+    class="w-full border-0 rounded-lg shadow-lg ring-1 ring-black/10"
   />
 )}

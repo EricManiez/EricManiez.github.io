@@ -20,11 +20,25 @@ const music = defineCollection({
   loader: glob({ pattern: '**/*.{md,mdx}', base: './src/content/music' }),
   schema: z.object({
     title: z.string(),
-    date: z.coerce.date(),
-    provider: z.enum(['bandcamp', 'soundcloud', 'spotify', 'youtube']),
-    embedUrl: z.string().url(),
+    years: z.string(),
+    genre: z.string(),
+    role: z.string(),
+    order: z.number(),
+    accent: z.string(),
+    embed: z
+      .object({
+        provider: z.enum(['bandcamp', 'soundcloud', 'spotify', 'youtube']),
+        url: z.string().url(),
+        height: z.number().optional(),
+      })
+      .optional(),
+    link: z
+      .object({
+        label: z.string(),
+        url: z.string().url(),
+      })
+      .optional(),
     summary: z.string().optional(),
-    role: z.string().optional(),
     draft: z.boolean().default(false),
   }),
 });

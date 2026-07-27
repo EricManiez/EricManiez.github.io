@@ -18,7 +18,19 @@
       "Bash(rtk rmdir *)",
       "Bash(rtk mv *)",
       "Bash(rtk mkdir *)",
-      "Bash(rtk head *)"
+      "Bash(rtk head *)",
+      "Bash(rtk date *)",
+      "Bash(/opt/homebrew/bin/rtk curl *)",
+      "Bash(curl -sIL -o /dev/null -w \"%{http_code}\\\\n\" https://ericmaniez.github.io/fr/)",
+      "Bash(curl -sIL -o /dev/null -w \"%{http_code}\\\\n\" https://ericmaniez.github.io/en/projects/hello-world/)",
+      "Bash(curl -sIL -o /dev/null -w \"%{http_code}\\\\n\" https://ericmaniez.github.io/fr/projects/hello-world/)",
+      "Bash(curl -sIL -o /dev/null -w \"%{http_code}\\\\n\" https://ericmaniez.github.io/en/about/)",
+      "Bash(curl -sIL -o /dev/null -w \"%{http_code}\\\\n\" https://ericmaniez.github.io/fr/about/)",
+      "Bash(curl -s https://ericmaniez.github.io/fr/)",
+      "Bash(curl -s https://ericmaniez.github.io/en/)",
+      "Bash(curl -s https://ericmaniez.github.io/fr/projects/hello-world/)",
+      "WebFetch(domain:leavethebiker.bandcamp.com)",
+      "Bash(curl -s \"https://leavethebiker.bandcamp.com/album/heavier-romance\" wc -l /tmp/ltb_album.html echo \"---\")"
     ]
   }
 }

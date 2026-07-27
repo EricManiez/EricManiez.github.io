@@ -1,0 +1,363 @@
+---
+import { getCollection, render } from 'astro:content';
+import Embed from './Embed.astro';
+import { t, type Locale } from '../i18n/strings';
+
+interface Props {
+  locale: Locale;
+}
+
+const { locale } = Astro.props;
+
+const entries = (await getCollection('music', ({ id, data }) =>
+  !data.draft && id.startsWith(`${locale}/`)
+)).sort((a, b) => a.data.order - b.data.order);
+
+const panels = await Promise.all(
+  entries.map(async (entry) => {
+    const { Content } = await render(entry);
+    return { entry, Content };
+  })
+);
+
+const slugOf = (id: string) => id.replace(/^[a-z]{2}\//, '');
+const firstAccent = panels[0]?.entry.data.accent ?? '#d97706';
+---
+
+<section class="mb-8">
+  <p class="font-mono text-xs uppercase tracking-widest text-[color:var(--color-ink-muted)]">
+    {t(locale, 'music.title')}
+  </p>
+  <h1 class="mt-1 text-3xl font-semibold sm:text-4xl">
+    {t(locale, 'music.subtitle')}
+  </h1>
+</section>
+
+{panels.length === 0 ? (
+  <p class="text-sm text-[color:var(--color-ink-muted)]">{t(locale, 'music.empty')}</p>
+) : (
+  <div class="showcase" style={`--accent: ${firstAccent}`}>
+    <div class="tabs" role="tablist" aria-label="Music projects">
+      {panels.map(({ entry }, i) => (
+        <button
+          type="button"
+          class:list={['tab', i === 0 && 'is-active']}
+          role="tab"
+          aria-selected={i === 0 ? 'true' : 'false'}
+          data-tab={i}
+          data-slug={slugOf(entry.id)}
+        >
+          <span class="tab-index">{String(i + 1).padStart(2, '0')}</span>
+          <span class="tab-label">{entry.data.title}</span>
+        </button>
+      ))}
+      <span class="tab-underline" aria-hidden="true"></span>
+    </div>
+
+    <div class="stack">
+      {panels.map(({ entry, Content }, i) => (
+        <article
+          class:list={['panel', i === 0 && 'is-active']}
+          data-panel={i}
+          data-slug={slugOf(entry.id)}
+          data-accent={entry.data.accent}
+          aria-hidden={i === 0 ? 'false' : 'true'}
+          role="tabpanel"
+        >
+          <header class="panel-meta">
+            <span>{entry.data.years}</span>
+            <span aria-hidden="true">·</span>
+            <span>{entry.data.genre}</span>
+          </header>
+          <h2 class="panel-title">{entry.data.title}</h2>
+          <p class="panel-role">{entry.data.role}</p>
+
+          <div class="prose prose-slate max-w-none panel-prose">
+            <Content />
+          </div>
+
+          {entry.data.embed && (
+            <div class="panel-embed">
+              <Embed
+                provider={entry.data.embed.provider}
+                embedUrl={entry.data.embed.url}
+                title={entry.data.title}
+                height={entry.data.embed.height}
+              />
+            </div>
+          )}
+
+          {entry.data.link && (
+            <a class="panel-link" href={entry.data.link.url} target="_blank" rel="noopener">
+              <span>{entry.data.link.label}</span>
+              <span aria-hidden="true">→</span>
+            </a>
+          )}
+        </article>
+      ))}
+    </div>
+
+    <footer class="controls">
+      <div class="controls-left">
+        <span id="showcase-progress" class="progress">01 / {String(panels.length).padStart(2, '0')}</span>
+        <span class="kbd-hint" aria-hidden="true">
+          <kbd>←</kbd> <kbd>→</kbd> {t(locale, 'music.kbdHint')}
+        </span>
+      </div>
+      <div class="controls-right">
+        <button type="button" id="showcase-prev" class="arrow" aria-label={t(locale, 'music.prev')}>
+          <span aria-hidden="true">←</span>
+        </button>
+        <button type="button" id="showcase-next" class="arrow" aria-label={t(locale, 'music.next')}>
+          <span aria-hidden="true">→</span>
+        </button>
+      </div>
+    </footer>
+  </div>
+)}
+
+<style>
+  .showcase {
+    --accent: #d97706;
+    --panel-transition: 350ms cubic-bezier(0.22, 1, 0.36, 1);
+  }
+
+  /* Tab bar */
+  .tabs {
+    position: relative;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0;
+    border-bottom: 1px solid rgb(0 0 0 / 0.1);
+    margin-bottom: 2.5rem;
+  }
+  .tab {
+    display: inline-flex;
+    align-items: baseline;
+    gap: 0.5rem;
+    padding: 0.75rem 1rem 0.9rem;
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    font-family: inherit;
+    color: var(--color-ink-muted);
+    transition: color var(--panel-transition);
+    border-bottom: 2px solid transparent;
+    margin-bottom: -1px;
+  }
+  .tab:hover { color: var(--accent); }
+  .tab.is-active {
+    color: var(--color-ink);
+    border-bottom-color: var(--accent);
+  }
+  .tab-index {
+    font-family: var(--font-mono);
+    font-size: 0.7rem;
+    letter-spacing: 0.05em;
+    color: var(--color-ink-muted);
+    opacity: 0.7;
+  }
+  .tab.is-active .tab-index { color: var(--accent); opacity: 1; }
+  .tab-label {
+    font-size: 0.95rem;
+    font-weight: 500;
+  }
+
+  /* Stacked panels */
+  .stack {
+    display: grid;
+    grid-template-areas: "stack";
+  }
+  .panel {
+    grid-area: stack;
+    opacity: 0;
+    transform: translateY(8px);
+    pointer-events: none;
+    transition: opacity var(--panel-transition), transform var(--panel-transition);
+    padding: 2rem 0 3rem;
+  }
+  .panel.is-active {
+    opacity: 1;
+    transform: translateY(0);
+    pointer-events: auto;
+  }
+  .panel-meta {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    color: var(--color-ink-muted);
+  }
+  .panel-title {
+    margin-top: 0.5rem;
+    font-size: clamp(2rem, 5vw, 3rem);
+    font-weight: 600;
+    line-height: 1.05;
+    letter-spacing: -0.01em;
+    background: linear-gradient(180deg, var(--color-ink) 60%, color-mix(in oklab, var(--accent) 60%, var(--color-ink)));
+    background-clip: text;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    color: transparent;
+  }
+  .panel-role {
+    margin-top: 1rem;
+    font-family: var(--font-mono);
+    font-size: 0.85rem;
+    color: var(--color-ink-muted);
+  }
+  .panel-prose {
+    margin-top: 1.5rem;
+    max-width: 42rem;
+  }
+  .panel-embed { margin-top: 2rem; }
+  .panel-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-top: 2rem;
+    padding: 0.85rem 1.25rem;
+    border: 1px solid rgb(0 0 0 / 0.15);
+    border-radius: 0.6rem;
+    text-decoration: none;
+    color: var(--color-ink);
+    font-weight: 500;
+    transition: border-color var(--panel-transition), background var(--panel-transition), color var(--panel-transition);
+  }
+  .panel-link:hover {
+    border-color: var(--accent);
+    background: color-mix(in oklab, var(--accent) 8%, transparent);
+    color: var(--accent);
+  }
+
+  /* Controls */
+  .controls {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 1rem;
+    padding-top: 1.25rem;
+    border-top: 1px solid rgb(0 0 0 / 0.1);
+    flex-wrap: wrap;
+  }
+  .controls-left {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+    flex-wrap: wrap;
+  }
+  .progress {
+    font-family: var(--font-mono);
+    font-size: 0.8rem;
+    color: var(--accent);
+    font-weight: 600;
+    letter-spacing: 0.05em;
+    transition: color var(--panel-transition);
+  }
+  .kbd-hint {
+    font-size: 0.7rem;
+    color: var(--color-ink-muted);
+    letter-spacing: 0.03em;
+  }
+  .kbd-hint kbd {
+    display: inline-block;
+    padding: 0.1rem 0.4rem;
+    border: 1px solid rgb(0 0 0 / 0.2);
+    border-bottom-width: 2px;
+    border-radius: 0.25rem;
+    font-family: var(--font-mono);
+    font-size: 0.7rem;
+    background: rgb(255 255 255 / 0.5);
+    color: var(--color-ink);
+  }
+  .controls-right {
+    display: flex;
+    gap: 0.5rem;
+  }
+  .arrow {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 2.5rem;
+    height: 2.5rem;
+    border: 1px solid rgb(0 0 0 / 0.15);
+    border-radius: 999px;
+    background: transparent;
+    font-family: var(--font-mono);
+    font-size: 1rem;
+    color: var(--color-ink);
+    cursor: pointer;
+    transition: border-color var(--panel-transition), color var(--panel-transition), background var(--panel-transition), transform 120ms ease;
+  }
+  .arrow:hover {
+    border-color: var(--accent);
+    color: var(--accent);
+    background: color-mix(in oklab, var(--accent) 8%, transparent);
+  }
+  .arrow:active { transform: scale(0.95); }
+  .arrow:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 2px;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .panel { transition: opacity 1ms; transform: none; }
+    .arrow { transition: none; }
+  }
+</style>
+
+<script>
+  function initShowcase() {
+    const showcase = document.querySelector<HTMLElement>('.showcase');
+    if (!showcase) return;
+
+    const panels = Array.from(showcase.querySelectorAll<HTMLElement>('[data-panel]'));
+    const tabs = Array.from(showcase.querySelectorAll<HTMLButtonElement>('[data-tab]'));
+    const progress = document.getElementById('showcase-progress');
+    const prev = document.getElementById('showcase-prev');
+    const next = document.getElementById('showcase-next');
+    if (!progress || !prev || !next || panels.length === 0) return;
+
+    let current = 0;
+
+    function apply(i: number) {
+      const n = panels.length;
+      i = ((i % n) + n) % n;
+      current = i;
+      panels.forEach((p, k) => {
+        p.classList.toggle('is-active', k === i);
+        p.setAttribute('aria-hidden', k === i ? 'false' : 'true');
+      });
+      tabs.forEach((t, k) => {
+        t.classList.toggle('is-active', k === i);
+        t.setAttribute('aria-selected', k === i ? 'true' : 'false');
+      });
+      const accent = panels[i].dataset.accent ?? '#d97706';
+      showcase!.style.setProperty('--accent', accent);
+      progress!.textContent = `${String(i + 1).padStart(2, '0')} / ${String(n).padStart(2, '0')}`;
+      const slug = panels[i].dataset.slug;
+      if (slug) history.replaceState(null, '', `#${slug}`);
+    }
+
+    tabs.forEach((tab, i) => tab.addEventListener('click', (e) => { e.preventDefault(); apply(i); }));
+    prev.addEventListener('click', () => apply(current - 1));
+    next.addEventListener('click', () => apply(current + 1));
+
+    document.addEventListener('keydown', (e) => {
+      const target = e.target as HTMLElement | null;
+      if (target && target.closest('input, textarea, iframe, [contenteditable]')) return;
+      if (e.key === 'ArrowRight') { e.preventDefault(); apply(current + 1); }
+      if (e.key === 'ArrowLeft')  { e.preventDefault(); apply(current - 1); }
+    });
+
+    // Initial from hash if present
+    const hashSlug = location.hash.slice(1);
+    const initial = panels.findIndex((p) => p.dataset.slug === hashSlug);
+    if (initial > 0) apply(initial);
+  }
+
+  initShowcase();
+</script>
