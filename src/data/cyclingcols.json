@@ -1,7 +1,146 @@
 {
-  "scrapedAt": null,
+  "scrapedAt": "2026-07-27T22:51:55.797Z",
   "source": "https://www.cyclingcols.com/athlete/eric/cols/all/europe",
-  "eventCount": 0,
-  "uniqueColCount": 0,
-  "uniqueCols": []
+  "eventCount": 50,
+  "uniqueColCount": 23,
+  "uniqueCols": [
+    {
+      "name": "Col de Malval",
+      "slug": "malval",
+      "country": "FRA",
+      "times": 12
+    },
+    {
+      "name": "Col de la Luère",
+      "slug": "luere",
+      "country": "FRA",
+      "times": 8
+    },
+    {
+      "name": "Le Saule-d'Oingt",
+      "slug": "saule-d-oingt",
+      "country": "FRA",
+      "times": 5
+    },
+    {
+      "name": "Col d'Izoard",
+      "slug": "izoard",
+      "country": "FRA",
+      "times": 2
+    },
+    {
+      "name": "Col des Brosses",
+      "slug": "brosses",
+      "country": "FRA",
+      "times": 2
+    },
+    {
+      "name": "Col du Galibier",
+      "slug": "galibier",
+      "country": "FRA",
+      "times": 2
+    },
+    {
+      "name": "Col du Lautaret",
+      "slug": "lautaret",
+      "country": "FRA",
+      "times": 2
+    },
+    {
+      "name": "Col du Tra",
+      "slug": "tra",
+      "country": "FRA",
+      "times": 2
+    },
+    {
+      "name": "Col de Fontenelle",
+      "slug": "fontenelle",
+      "country": "FRA",
+      "times": 1
+    },
+    {
+      "name": "Col de l'Allimas",
+      "slug": "allimas",
+      "country": "FRA",
+      "times": 1
+    },
+    {
+      "name": "Col de l'Échelle",
+      "slug": "echelle",
+      "country": "FRA",
+      "times": 1
+    },
+    {
+      "name": "Col de l'Oeillon",
+      "slug": "oeillon",
+      "country": "FRA",
+      "times": 1
+    },
+    {
+      "name": "Col de la Madeleine",
+      "slug": "madeleine",
+      "country": "FRA",
+      "times": 1
+    },
+    {
+      "name": "Col de Pavezin",
+      "slug": "pavezin",
+      "country": "FRA",
+      "times": 1
+    },
+    {
+      "name": "Col du Benas",
+      "slug": "benas",
+      "country": "FRA",
+      "times": 1
+    },
+    {
+      "name": "Col du Chêne",
+      "slug": "chene",
+      "country": "FRA",
+      "times": 1
+    },
+    {
+      "name": "Col du Fayet",
+      "slug": "fayet",
+      "country": "FRA",
+      "times": 1
+    },
+    {
+      "name": "Col du Fût d'Avenas",
+      "slug": "fut-d-avenas",
+      "country": "FRA",
+      "times": 1
+    },
+    {
+      "name": "Col du Granon",
+      "slug": "granon",
+      "country": "FRA",
+      "times": 1
+    },
+    {
+      "name": "Col du Joncin",
+      "slug": "joncin",
+      "country": "FRA",
+      "times": 1
+    },
+    {
+      "name": "Col du Télégraphe",
+      "slug": "telegraphe",
+      "country": "FRA",
+      "times": 1
+    },
+    {
+      "name": "Col du Tracol",
+      "slug": "tracol",
+      "country": "FRA",
+      "times": 1
+    },
+    {
+      "name": "Puy-Saint-Vincent",
+      "slug": "puy-saint-vincent",
+      "country": "FRA",
+      "times": 1
+    }
+  ]
 }
