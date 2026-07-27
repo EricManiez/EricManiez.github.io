@@ -198,14 +198,16 @@ const firstAccent = panels[0]?.accent ?? '#d97706';
   .tab.is-active .tab-index { color: var(--tab-accent, #d97706); opacity: 1; }
   .tab-label { font-size: 0.95rem; font-weight: 500; }
 
-  /* Stacked panels */
+  /* Panels: only the active one occupies flow; inactive ones sit on top
+     of it (absolute) so the container is sized to the active panel and
+     shorter panels don't leave dead space below. */
   .stack {
-    display: grid;
-    grid-template-areas: "stack";
+    position: relative;
     touch-action: pan-y;
   }
   .panel {
-    grid-area: stack;
+    position: absolute;
+    inset: 0 0 auto 0;
     opacity: 0;
     transform: translateY(8px);
     pointer-events: none;
@@ -216,6 +218,7 @@ const firstAccent = panels[0]?.accent ?? '#d97706';
     border-left: 3px solid transparent;
   }
   .panel.is-active {
+    position: relative;
     opacity: 1;
     transform: translateY(0);
     pointer-events: auto;
