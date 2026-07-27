@@ -30,7 +30,17 @@
       "Bash(curl -s https://ericmaniez.github.io/en/)",
       "Bash(curl -s https://ericmaniez.github.io/fr/projects/hello-world/)",
       "WebFetch(domain:leavethebiker.bandcamp.com)",
-      "Bash(curl -s \"https://leavethebiker.bandcamp.com/album/heavier-romance\" wc -l /tmp/ltb_album.html echo \"---\")"
+      "Bash(curl -s \"https://leavethebiker.bandcamp.com/album/heavier-romance\" wc -l /tmp/ltb_album.html echo \"---\")",
+      "Bash(curl -sIL -o /dev/null -w \"%{http_code}\\\\n\" https://ericmaniez.github.io/en/music/)",
+      "Bash(curl -sIL -o /dev/null -w \"%{http_code}\\\\n\" https://ericmaniez.github.io/fr/music/)",
+      "Bash(curl -s https://ericmaniez.github.io/en/music/)",
+      "Bash(curl -s https://ericmaniez.github.io/fr/music/)",
+      "Bash(curl -s \"http://localhost:4321/src/components/MusicShowcase.astro?astro&type=style&index=0&lang.css\")",
+      "Bash(npx --yes playwright install chromium)",
+      "Bash(node /tmp/shot.mjs http://localhost:4321/en/music/ /tmp/music.png)",
+      "Bash(node shot.mjs http://localhost:4321/en/music/ /tmp/music.png)",
+      "Bash(node *)",
+      "Bash(pkill -f \"astro dev\")"
     ]
   }
 }
