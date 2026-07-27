@@ -27,7 +27,7 @@ const music = defineCollection({
     accent: z.string(),
     embed: z
       .object({
-        provider: z.enum(['bandcamp', 'soundcloud', 'spotify', 'youtube']),
+        provider: z.enum(['bandcamp', 'soundcloud', 'spotify', 'youtube', 'googledrive']),
         url: z.string().url(),
         height: z.number().optional(),
       })
@@ -55,7 +55,7 @@ const oddities = defineCollection({
     inProgress: z.boolean().default(false),
     embed: z
       .object({
-        provider: z.enum(['bandcamp', 'soundcloud', 'spotify', 'youtube']),
+        provider: z.enum(['bandcamp', 'soundcloud', 'spotify', 'youtube', 'googledrive']),
         url: z.string().url(),
         height: z.number().optional(),
       })
@@ -84,7 +84,7 @@ const engineering = defineCollection({
     stack: z.array(z.string()).optional(),
     embed: z
       .object({
-        provider: z.enum(['bandcamp', 'soundcloud', 'spotify', 'youtube']),
+        provider: z.enum(['bandcamp', 'soundcloud', 'spotify', 'youtube', 'googledrive']),
         url: z.string().url(),
         height: z.number().optional(),
       })
@@ -111,6 +111,13 @@ const sports = defineCollection({
     accent: z.string(),
     ongoing: z.boolean().default(false),
     tags: z.array(z.string()).optional(),
+    embed: z
+      .object({
+        provider: z.enum(['bandcamp', 'soundcloud', 'spotify', 'youtube', 'googledrive']),
+        url: z.string().url(),
+        height: z.number().optional(),
+      })
+      .optional(),
     link: z
       .object({
         label: z.string(),
