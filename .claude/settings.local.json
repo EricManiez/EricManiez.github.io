@@ -52,7 +52,9 @@
       "Bash(awk '/<form method=\"post\" action=\"\\\\/login\">/,/<\\\\/form>/' /tmp/cc-login.html)",
       "Bash(rtk which *)",
       "Bash(curl -s https://ericmaniez.github.io/_astro/index.AQN3BVX5.css wc -c /tmp/live-idx.css rtk grep -oE 'flex:0 0 auto|flex: 0 0 auto' /tmp/live-idx.css)",
-      "Bash(curl -s https://ericmaniez.github.io/_astro/index.DeZuaQlb.css wc -c /tmp/live-idx.css rtk grep -oE 'position:absolute' /tmp/live-idx.css)"
+      "Bash(curl -s https://ericmaniez.github.io/_astro/index.DeZuaQlb.css wc -c /tmp/live-idx.css rtk grep -oE 'position:absolute' /tmp/live-idx.css)",
+      "Bash(rtk wc *)",
+      "Bash(curl -s -A \"Mozilla/5.0\" https://www.cyclingcols.com/col/galibier wc -l /tmp/col-galibier.html rtk grep -oE '\\(distance|elevation|length|denivelé|dénivelé|km|meters?|altitude\\)' /tmp/col-galibier.html)"
     ]
   }
 }

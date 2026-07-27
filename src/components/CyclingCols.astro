@@ -1,77 +1,92 @@
 ---
-// Renders the biking climbs list. Prefers scraped data from
-// src/data/cyclingcols.json when available; otherwise falls back to a
-// hand-curated set of famous cols with their canonical stats.
-
-const FALLBACK = [
-  { name: 'Col du Galibier',    elevation: 2642, length: 34.8, gradient: 5.5 },
-  { name: 'Col d’Izoard',       elevation: 2360, length: 14.1, gradient: 7.3 },
-  { name: 'Col de la Madeleine', elevation: 2000, length: 25.0, gradient: 6.2 },
-  { name: 'Col du Granon',      elevation: 2413, length: 11.3, gradient: 9.2 },
-];
-
-// Eager-load the JSON when it exists; empty object otherwise.
-const dataMap = import.meta.glob('/src/data/cyclingcols.json', { eager: true, import: 'default' });
-const scraped: any = Object.values(dataMap)[0] ?? null;
+// Renders the biking climbs as a sortable table. Reads scraped data from
+// src/data/cyclingcols.json; falls back to a hand-curated set of famous cols
+// with their canonical stats when no scraped data exists.
 
 interface Col {
   name: string;
   slug?: string;
   country?: string | null;
   times: number;
+  distance?: number | null; // km
+  gain?: number | null;     // meters of elevation gain
 }
+
+const FALLBACK: Col[] = [
+  { name: 'Col du Galibier',    country: 'FRA', times: 1, distance: 34.8, gain: 2095 },
+  { name: 'Col d’Izoard',       country: 'FRA', times: 1, distance: 14.1, gain: 1095 },
+  { name: 'Col de la Madeleine', country: 'FRA', times: 1, distance: 25.0, gain: 1540 },
+  { name: 'Col du Granon',      country: 'FRA', times: 1, distance: 11.3, gain: 1040 },
+];
+
+// Eager-load the JSON when it exists; empty object otherwise.
+const dataMap = import.meta.glob('/src/data/cyclingcols.json', { eager: true, import: 'default' });
+const scraped: any = Object.values(dataMap)[0] ?? null;
 
 const hasScraped = scraped
   && Array.isArray(scraped.uniqueCols)
   && scraped.uniqueCols.length > 0;
 
-const uniqueCols: Col[] = hasScraped ? scraped.uniqueCols : [];
-const totalClimbs = hasScraped ? (scraped.eventCount ?? 0) : 0;
+const cols: Col[] = hasScraped ? scraped.uniqueCols : FALLBACK;
+const totalClimbs = hasScraped ? (scraped.eventCount ?? 0) : cols.length;
+
+// Serialize the rows as JSON so the client script can re-sort without
+// re-scraping the DOM (also cleaner for numeric comparisons on missing values).
+const rows = cols.map((c, i) => ({
+  i,
+  name: c.name,
+  country: c.country ?? '',
+  times: c.times ?? 0,
+  distance: c.distance ?? null,
+  gain: c.gain ?? null,
+}));
 ---
 
-{hasScraped ? (
+{cols.length === 0 ? (
+  <p class="text-sm text-[color:var(--color-ink-muted,#475569)]">No climbs recorded yet.</p>
+) : (
   <div class="climbs">
     <div class="climbs-summary">
-      <span class="stat"><span class="stat-num">{uniqueCols.length}</span> cols climbed</span>
+      <span class="stat"><span class="stat-num">{cols.length}</span> cols climbed</span>
       <span class="stat"><span class="stat-num">{totalClimbs}</span> ascents</span>
     </div>
 
-    <ul class="climbs-grid">
-      {uniqueCols.map((c) => (
-        <li class="col-card">
-          <div class="col-card-main">
-            <span class="col-name">{c.name}</span>
-            {c.country && <span class="col-country">{c.country}</span>}
-          </div>
-          {c.times > 1 && (
-            <div class="col-card-meta">
-              <span class="col-times">{c.times}×</span>
-            </div>
-          )}
-        </li>
-      ))}
-    </ul>
-  </div>
-) : (
-  <div class="climbs">
-    <h3 class="climbs-title">Notable climbs</h3>
-    <ul class="climbs-list">
-      {FALLBACK.map((c) => (
-        <li class="climb">
-          <span class="climb-name">{c.name}</span>
-          <span class="climb-stat">{c.elevation.toLocaleString()} m</span>
-          <span class="climb-stat">{c.length} km</span>
-          <span class="climb-stat">{c.gradient}%</span>
-        </li>
-      ))}
-    </ul>
+    <div class="climbs-table-wrap">
+      <table class="climbs-table">
+        <thead>
+          <tr>
+            <th data-key="name"     data-type="text">Col</th>
+            <th data-key="distance" data-type="num">Distance</th>
+            <th data-key="gain"     data-type="num">Gain</th>
+            <th data-key="country"  data-type="text">Country</th>
+            <th data-key="times"    data-type="num" data-active="desc">Reps</th>
+          </tr>
+        </thead>
+        <tbody>
+          {rows.map((r) => (
+            <tr
+              data-name={r.name}
+              data-country={r.country}
+              data-times={r.times}
+              data-distance={r.distance ?? ''}
+              data-gain={r.gain ?? ''}
+            >
+              <td class="c-name">{r.name}</td>
+              <td class="c-num">{r.distance != null ? `${r.distance} km` : '—'}</td>
+              <td class="c-num">{r.gain != null ? `${r.gain} m` : '—'}</td>
+              <td class="c-country">{r.country || '—'}</td>
+              <td class="c-num c-reps">{r.times > 1 ? `${r.times}×` : '1'}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
   </div>
 )}
 
 <style>
   .climbs { margin-top: 1.5rem; }
 
-  /* Summary row (scraped mode) */
   .climbs-summary {
     display: flex;
     flex-wrap: wrap;
@@ -94,100 +109,109 @@ const totalClimbs = hasScraped ? (scraped.eventCount ?? 0) : 0;
     line-height: 1;
   }
 
-  /* Grid of climbed cols */
-  .climbs-grid {
-    list-style: none;
-    padding: 0;
-    margin: 0;
-    display: grid;
-    grid-template-columns: 1fr;
-    gap: 0.4rem;
+  .climbs-table-wrap {
+    overflow-x: auto;
+    border-radius: 8px;
+    border: 1px solid rgb(0 0 0 / 0.1);
   }
-  @media (min-width: 640px) {
-    .climbs-grid { grid-template-columns: repeat(2, 1fr); }
+  .climbs-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-family: inherit;
+    font-size: 0.9rem;
   }
-
-  .col-card {
-    display: flex;
-    justify-content: space-between;
-    align-items: baseline;
-    gap: 0.75rem;
-    padding: 0.55rem 0.75rem;
-    border-left: 3px solid transparent;
-    border-radius: 0 4px 4px 0;
-    background: color-mix(in oklab, var(--accent, #d97706) 3%, transparent);
-    transition: border-color 200ms, background 200ms;
-  }
-  .col-card:hover {
-    border-left-color: var(--accent, #d97706);
-    background: color-mix(in oklab, var(--accent, #d97706) 8%, transparent);
-  }
-  .col-card-main { display: flex; align-items: baseline; gap: 0.5rem; min-width: 0; }
-  .col-name {
-    font-weight: 500;
-    color: var(--color-ink, #0f172a);
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-  }
-  .col-country {
+  .climbs-table thead th {
+    background: rgb(0 0 0 / 0.02);
+    text-align: left;
+    padding: 0.6rem 0.85rem;
     font-family: var(--font-mono, ui-monospace, monospace);
-    font-size: 0.65rem;
+    font-size: 0.7rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--color-ink-muted, #475569);
+    cursor: pointer;
+    user-select: none;
+    border-bottom: 1px solid rgb(0 0 0 / 0.1);
+    white-space: nowrap;
+    transition: color 150ms, background 150ms;
+  }
+  .climbs-table thead th:hover { color: var(--accent, #d97706); }
+  .climbs-table thead th[data-active] {
+    color: var(--accent, #d97706);
+    background: color-mix(in oklab, var(--accent, #d97706) 6%, transparent);
+  }
+  .climbs-table thead th[data-active]::after {
+    content: '';
+    display: inline-block;
+    margin-left: 0.35rem;
+    width: 0; height: 0;
+    border-left: 4px solid transparent;
+    border-right: 4px solid transparent;
+    vertical-align: middle;
+  }
+  .climbs-table thead th[data-active="asc"]::after  { border-bottom: 5px solid var(--accent, #d97706); }
+  .climbs-table thead th[data-active="desc"]::after { border-top:    5px solid var(--accent, #d97706); }
+
+  .climbs-table thead th[data-type="num"] { text-align: right; }
+  .climbs-table td { padding: 0.5rem 0.85rem; border-top: 1px solid rgb(0 0 0 / 0.05); }
+  .climbs-table tbody tr:first-child td { border-top: 0; }
+  .climbs-table tbody tr { transition: background 120ms; }
+  .climbs-table tbody tr:hover { background: color-mix(in oklab, var(--accent, #d97706) 5%, transparent); }
+
+  .c-name { font-weight: 500; color: var(--color-ink, #0f172a); }
+  .c-num  { text-align: right; font-family: var(--font-mono, ui-monospace, monospace); font-variant-numeric: tabular-nums; }
+  .c-country {
+    font-family: var(--font-mono, ui-monospace, monospace);
+    font-size: 0.72rem;
     letter-spacing: 0.08em;
     color: var(--color-ink-muted, #475569);
     text-transform: uppercase;
   }
-  .col-card-meta {
-    display: flex;
-    align-items: baseline;
-    gap: 0.6rem;
-    font-family: var(--font-mono, ui-monospace, monospace);
-    font-size: 0.7rem;
-    white-space: nowrap;
-  }
-  .col-times {
-    padding: 0.05rem 0.4rem;
-    border-radius: 999px;
-    background: color-mix(in oklab, var(--accent, #d97706) 15%, transparent);
-    color: var(--accent, #d97706);
-    font-weight: 700;
-  }
-
-  /* Fallback list */
-  .climbs-title {
-    margin: 0 0 0.75rem;
-    font-size: 1.2rem;
-    font-weight: 600;
-    color: var(--color-ink, #0f172a);
-  }
-  .climbs-list {
-    list-style: none;
-    padding: 0;
-    margin: 0;
-    display: flex;
-    flex-direction: column;
-    gap: 0.4rem;
-  }
-  .climb {
-    display: flex;
-    align-items: baseline;
-    flex-wrap: wrap;
-    gap: 0.75rem;
-    padding: 0.5rem 0.75rem;
-    border-left: 3px solid var(--accent, currentColor);
-    background: color-mix(in oklab, var(--accent, #d97706) 5%, transparent);
-    border-radius: 0 4px 4px 0;
-  }
-  .climb-name {
-    font-weight: 600;
-    color: var(--color-ink, #0f172a);
-    flex: 1 1 auto;
-  }
-  .climb-stat {
-    font-family: var(--font-mono, ui-monospace, monospace);
-    font-size: 0.8rem;
-    color: var(--color-ink-muted, #475569);
-    white-space: nowrap;
-  }
-
+  .c-reps { color: var(--accent, #d97706); font-weight: 700; }
+  .c-num:has-text('—') { color: var(--color-ink-muted, #475569); }
 </style>
+
+<script>
+  document.querySelectorAll<HTMLElement>('.climbs-table').forEach((table) => {
+    const tbody = table.querySelector<HTMLElement>('tbody');
+    const headers = Array.from(table.querySelectorAll<HTMLElement>('thead th[data-key]'));
+    if (!tbody) return;
+
+    function sort(key: string, type: string, dir: 'asc' | 'desc') {
+      const rows = Array.from(tbody!.querySelectorAll<HTMLElement>('tr'));
+      rows.sort((a, b) => {
+        const av = a.dataset[key] ?? '';
+        const bv = b.dataset[key] ?? '';
+        // Missing values always sort to the bottom, regardless of direction.
+        const aMiss = av === '' || av == null;
+        const bMiss = bv === '' || bv == null;
+        if (aMiss && bMiss) return 0;
+        if (aMiss) return 1;
+        if (bMiss) return -1;
+        let cmp = 0;
+        if (type === 'num') {
+          cmp = parseFloat(av) - parseFloat(bv);
+        } else {
+          cmp = av.localeCompare(bv, undefined, { sensitivity: 'base' });
+        }
+        return dir === 'asc' ? cmp : -cmp;
+      });
+      rows.forEach((r) => tbody!.appendChild(r));
+    }
+
+    headers.forEach((th) => {
+      th.addEventListener('click', () => {
+        const key = th.dataset.key!;
+        const type = th.dataset.type ?? 'text';
+        const currentDir = th.getAttribute('data-active') as 'asc' | 'desc' | null;
+        // Default direction: desc for numbers, asc for text; toggle if already active.
+        const nextDir: 'asc' | 'desc' = currentDir
+          ? (currentDir === 'asc' ? 'desc' : 'asc')
+          : (type === 'num' ? 'desc' : 'asc');
+        headers.forEach((h) => h.removeAttribute('data-active'));
+        th.setAttribute('data-active', nextDir);
+        sort(key, type, nextDir);
+      });
+    });
+  });
+</script>

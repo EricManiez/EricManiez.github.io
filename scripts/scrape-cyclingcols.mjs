@@ -139,6 +139,46 @@ try {
 
   console.log(`Extracted ${climbs.length} climb event(s), ${uniqueCols.length} unique col(s).`);
 
+  // Second pass: visit each col's own page to grab distance + elevation gain.
+  // A col can have multiple routes; we take the longest one as "the classic
+  // version" (most impressive number to display).
+  console.log('Fetching per-col stats...');
+  for (const col of uniqueCols) {
+    const url = `https://www.cyclingcols.com/col/${encodeURIComponent(col.slug)}`;
+    try {
+      await page.goto(url, { waitUntil: 'domcontentloaded', timeout: 20000 });
+      const stats = await page.evaluate(() => {
+        const num = (s) => {
+          if (!s) return null;
+          const n = parseFloat(s.replace(/\u00a0/g, ' ').replace(/[^\d.,]/g, '').replace(',', '.'));
+          return Number.isFinite(n) ? n : null;
+        };
+        const distEls = document.querySelectorAll('.cc-stat-badge[title="Distance"] .cc-stat-value');
+        const gainEls = document.querySelectorAll('.cc-stat-badge[title="Elevation Gain"] .cc-stat-value');
+        const routes = [];
+        for (let i = 0; i < distEls.length; i++) {
+          const d = num(distEls[i]?.textContent);
+          const g = num(gainEls[i]?.textContent);
+          if (d != null) routes.push({ distance: d, gain: g });
+        }
+        if (routes.length === 0) return { distance: null, gain: null };
+        // Longest route by distance = the classic long version.
+        return routes.reduce((a, b) => (b.distance > a.distance ? b : a));
+      });
+      col.distance = stats.distance;
+      col.gain = stats.gain;
+      const d = stats.distance != null ? `${stats.distance} km` : '?';
+      const g = stats.gain != null ? `${stats.gain} m gain` : '?';
+      console.log(`  ${col.name.padEnd(28)}  ${d.padStart(9)}  ${g.padStart(11)}`);
+    } catch (err) {
+      console.warn(`  ${col.name}: failed (${err.message.split('\n')[0]})`);
+      col.distance = null;
+      col.gain = null;
+    }
+    // Be polite to the server.
+    await page.waitForTimeout(400);
+  }
+
   await writeFile(outJson, JSON.stringify({
     scrapedAt: new Date().toISOString(),
     source: profileUrl,
