@@ -1,0 +1,234 @@
+---
+// Renders the biking climbs list. Prefers scraped data from
+// src/data/cyclingcols.json when available; otherwise falls back to a
+// hand-curated set of famous cols with their canonical stats.
+
+const FALLBACK = [
+  { name: 'Col du Galibier',    elevation: 2642, length: 34.8, gradient: 5.5 },
+  { name: 'Col d’Izoard',       elevation: 2360, length: 14.1, gradient: 7.3 },
+  { name: 'Col de la Madeleine', elevation: 2000, length: 25.0, gradient: 6.2 },
+  { name: 'Col du Granon',      elevation: 2413, length: 11.3, gradient: 9.2 },
+];
+
+// Eager-load the JSON when it exists; empty object otherwise.
+const dataMap = import.meta.glob('/src/data/cyclingcols.json', { eager: true, import: 'default' });
+const scraped: any = Object.values(dataMap)[0] ?? null;
+
+interface Col {
+  name: string;
+  slug?: string;
+  country?: string | null;
+  times: number;
+  firstDate?: string | null;
+  lastDate?: string | null;
+}
+
+const hasScraped = scraped
+  && Array.isArray(scraped.uniqueCols)
+  && scraped.uniqueCols.length > 0;
+
+const uniqueCols: Col[] = hasScraped ? scraped.uniqueCols : [];
+const totalClimbs = hasScraped ? (scraped.eventCount ?? scraped.events?.length ?? 0) : 0;
+
+// Year range from all events.
+let yearRange = '';
+if (hasScraped && Array.isArray(scraped.events) && scraped.events.length > 0) {
+  const years = scraped.events
+    .map((e: any) => (e.date && /^\d{4}/.test(e.date)) ? Number(e.date.slice(0, 4)) : null)
+    .filter((y: number | null) => y != null)
+    .sort((a: number, b: number) => a - b);
+  if (years.length > 0) {
+    yearRange = years[0] === years[years.length - 1]
+      ? String(years[0])
+      : `${years[0]} → ${years[years.length - 1]}`;
+  }
+}
+
+function fmtDate(iso?: string | null) {
+  if (!iso || !/^\d{4}-\d{2}-\d{2}$/.test(iso)) return '';
+  const [y, m] = iso.split('-');
+  const monthNames = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+  return `${monthNames[Number(m) - 1]} ${y}`;
+}
+
+const scrapedAtIso = hasScraped && scraped?.scrapedAt
+  ? new Date(scraped.scrapedAt).toISOString().slice(0, 10)
+  : null;
+---
+
+{hasScraped ? (
+  <div class="climbs">
+    <div class="climbs-summary">
+      <span class="stat"><span class="stat-num">{uniqueCols.length}</span> cols climbed</span>
+      <span class="stat"><span class="stat-num">{totalClimbs}</span> ascents</span>
+      {yearRange && <span class="stat">{yearRange}</span>}
+    </div>
+
+    <ul class="climbs-grid">
+      {uniqueCols.map((c) => (
+        <li class="col-card">
+          <div class="col-card-main">
+            <span class="col-name">{c.name}</span>
+            {c.country && <span class="col-country">{c.country}</span>}
+          </div>
+          <div class="col-card-meta">
+            {c.times > 1 && <span class="col-times">{c.times}×</span>}
+            {c.lastDate && <span class="col-date">{fmtDate(c.lastDate)}</span>}
+          </div>
+        </li>
+      ))}
+    </ul>
+
+    {scrapedAtIso && (
+      <p class="climbs-note">
+        Data synced from CyclingCols on {scrapedAtIso}.
+      </p>
+    )}
+  </div>
+) : (
+  <div class="climbs">
+    <h3 class="climbs-title">Notable climbs</h3>
+    <ul class="climbs-list">
+      {FALLBACK.map((c) => (
+        <li class="climb">
+          <span class="climb-name">{c.name}</span>
+          <span class="climb-stat">{c.elevation.toLocaleString()} m</span>
+          <span class="climb-stat">{c.length} km</span>
+          <span class="climb-stat">{c.gradient}%</span>
+        </li>
+      ))}
+    </ul>
+  </div>
+)}
+
+<style>
+  .climbs { margin-top: 1.5rem; }
+
+  /* Summary row (scraped mode) */
+  .climbs-summary {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem 2rem;
+    padding: 0.9rem 1rem;
+    margin-bottom: 1.25rem;
+    border-radius: 8px;
+    background: color-mix(in oklab, var(--accent, #d97706) 8%, transparent);
+    border-left: 4px solid var(--accent, #d97706);
+    font-family: var(--font-mono, ui-monospace, monospace);
+    font-size: 0.85rem;
+    color: var(--color-ink, #0f172a);
+    letter-spacing: 0.02em;
+  }
+  .stat { display: inline-flex; align-items: baseline; gap: 0.4rem; }
+  .stat-num {
+    font-size: 1.35rem;
+    font-weight: 700;
+    color: var(--accent, #d97706);
+    line-height: 1;
+  }
+
+  /* Grid of climbed cols */
+  .climbs-grid {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 0.4rem;
+  }
+  @media (min-width: 640px) {
+    .climbs-grid { grid-template-columns: repeat(2, 1fr); }
+  }
+
+  .col-card {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: 0.75rem;
+    padding: 0.55rem 0.75rem;
+    border-left: 3px solid transparent;
+    border-radius: 0 4px 4px 0;
+    background: color-mix(in oklab, var(--accent, #d97706) 3%, transparent);
+    transition: border-color 200ms, background 200ms;
+  }
+  .col-card:hover {
+    border-left-color: var(--accent, #d97706);
+    background: color-mix(in oklab, var(--accent, #d97706) 8%, transparent);
+  }
+  .col-card-main { display: flex; align-items: baseline; gap: 0.5rem; min-width: 0; }
+  .col-name {
+    font-weight: 500;
+    color: var(--color-ink, #0f172a);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .col-country {
+    font-family: var(--font-mono, ui-monospace, monospace);
+    font-size: 0.65rem;
+    letter-spacing: 0.08em;
+    color: var(--color-ink-muted, #475569);
+    text-transform: uppercase;
+  }
+  .col-card-meta {
+    display: flex;
+    align-items: baseline;
+    gap: 0.6rem;
+    font-family: var(--font-mono, ui-monospace, monospace);
+    font-size: 0.7rem;
+    color: var(--color-ink-muted, #475569);
+    white-space: nowrap;
+  }
+  .col-times {
+    padding: 0.05rem 0.4rem;
+    border-radius: 999px;
+    background: color-mix(in oklab, var(--accent, #d97706) 15%, transparent);
+    color: var(--accent, #d97706);
+    font-weight: 700;
+  }
+
+  /* Fallback list */
+  .climbs-title {
+    margin: 0 0 0.75rem;
+    font-size: 1.2rem;
+    font-weight: 600;
+    color: var(--color-ink, #0f172a);
+  }
+  .climbs-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+  }
+  .climb {
+    display: flex;
+    align-items: baseline;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    padding: 0.5rem 0.75rem;
+    border-left: 3px solid var(--accent, currentColor);
+    background: color-mix(in oklab, var(--accent, #d97706) 5%, transparent);
+    border-radius: 0 4px 4px 0;
+  }
+  .climb-name {
+    font-weight: 600;
+    color: var(--color-ink, #0f172a);
+    flex: 1 1 auto;
+  }
+  .climb-stat {
+    font-family: var(--font-mono, ui-monospace, monospace);
+    font-size: 0.8rem;
+    color: var(--color-ink-muted, #475569);
+    white-space: nowrap;
+  }
+
+  .climbs-note {
+    margin-top: 0.75rem;
+    font-family: var(--font-mono, ui-monospace, monospace);
+    font-size: 0.7rem;
+    color: var(--color-ink-muted, #475569);
+    letter-spacing: 0.02em;
+  }
+</style>
