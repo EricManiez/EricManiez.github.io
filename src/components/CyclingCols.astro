@@ -53,13 +53,13 @@ const rows = cols.map((c, i) => ({
       <table class="climbs-table">
         <thead>
           <tr>
-            <th><button type="button" class="th-btn" data-key="name"      data-type="text">Col</button></th>
-            <th><button type="button" class="th-btn" data-key="elevation" data-type="num">Alt.</button></th>
-            <th><button type="button" class="th-btn" data-key="distance"  data-type="num">Distance</button></th>
-            <th><button type="button" class="th-btn" data-key="gain"      data-type="num">Gain</button></th>
-            <th><button type="button" class="th-btn" data-key="avgslope"  data-type="num">Avg slope</button></th>
-            <th><button type="button" class="th-btn" data-key="country"   data-type="text">Country</button></th>
-            <th><button type="button" class="th-btn" data-key="times"     data-type="num" data-active="desc">Reps</button></th>
+            <th><button type="button" class="th-btn" data-key="name"      data-type="text">Col<span class="sort-mark" aria-hidden="true">↕</span></button></th>
+            <th><button type="button" class="th-btn" data-key="elevation" data-type="num">Alt.<span class="sort-mark" aria-hidden="true">↕</span></button></th>
+            <th><button type="button" class="th-btn" data-key="distance"  data-type="num">Distance<span class="sort-mark" aria-hidden="true">↕</span></button></th>
+            <th><button type="button" class="th-btn" data-key="gain"      data-type="num">Gain<span class="sort-mark" aria-hidden="true">↕</span></button></th>
+            <th><button type="button" class="th-btn" data-key="avgslope"  data-type="num">Avg slope<span class="sort-mark" aria-hidden="true">↕</span></button></th>
+            <th><button type="button" class="th-btn" data-key="country"   data-type="text">Country<span class="sort-mark" aria-hidden="true">↕</span></button></th>
+            <th><button type="button" class="th-btn" data-key="times"     data-type="num" data-active="desc">Reps<span class="sort-mark" aria-hidden="true">↓</span></button></th>
           </tr>
         </thead>
         <tbody>
@@ -128,11 +128,11 @@ const rows = cols.map((c, i) => ({
     transition: color 150ms, background 150ms, border-color 150ms;
   }
   /* Neutral (unsorted) affordance — small double arrow on every header. */
-  .th-btn::after {
-    content: '↕';
+  .sort-mark {
+    display: inline-block;
     font-size: 0.75rem;
     line-height: 1;
-    opacity: 0.4;
+    opacity: 0.45;
     color: currentColor;
     transition: opacity 150ms, color 150ms;
   }
@@ -140,14 +140,13 @@ const rows = cols.map((c, i) => ({
     color: var(--accent, #d97706);
     border-color: color-mix(in oklab, var(--accent, #d97706) 25%, transparent);
   }
-  .th-btn:hover::after { opacity: 1; }
+  .th-btn:hover .sort-mark { opacity: 1; }
   .th-btn[data-active] {
     color: var(--accent, #d97706);
     background: color-mix(in oklab, var(--accent, #d97706) 10%, transparent);
     border-color: color-mix(in oklab, var(--accent, #d97706) 30%, transparent);
   }
-  .th-btn[data-active="asc"]::after  { content: '↑'; opacity: 1; }
-  .th-btn[data-active="desc"]::after { content: '↓'; opacity: 1; }
+  .th-btn[data-active] .sort-mark { opacity: 1; }
 
   .climbs-table thead th:has([data-type="num"]) { text-align: right; }
   .climbs-table td { padding: 0.5rem 0.85rem; border-top: 1px solid rgb(0 0 0 / 0.05); }
@@ -196,6 +195,15 @@ const rows = cols.map((c, i) => ({
       rows.forEach((r) => tbody!.appendChild(r));
     }
 
+    function paintMarks(active: HTMLElement, dir: 'asc' | 'desc') {
+      triggers.forEach((t) => {
+        const mark = t.querySelector<HTMLElement>('.sort-mark');
+        if (!mark) return;
+        if (t === active) mark.textContent = dir === 'asc' ? '↑' : '↓';
+        else mark.textContent = '↕';
+      });
+    }
+
     triggers.forEach((el) => {
       el.addEventListener('click', () => {
         const key = el.dataset.key!;
@@ -207,6 +215,7 @@ const rows = cols.map((c, i) => ({
           : (type === 'num' ? 'desc' : 'asc');
         triggers.forEach((t) => t.removeAttribute('data-active'));
         el.setAttribute('data-active', nextDir);
+        paintMarks(el, nextDir);
         sort(key, type, nextDir);
       });
     });
