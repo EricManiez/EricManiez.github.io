@@ -148,6 +148,9 @@ const firstAccent = panels[0]?.accent ?? '#d97706';
     margin-bottom: 2.5rem;
   }
   .tab {
+    /* Intrinsic width — never stretched by the flex container. */
+    flex: 0 0 auto;
+    width: auto;
     position: relative;
     display: inline-flex;
     align-items: center;
@@ -207,15 +210,18 @@ const firstAccent = panels[0]?.accent ?? '#d97706';
     transform: translateY(8px);
     pointer-events: none;
     visibility: hidden;
-    transition: opacity var(--transition), transform var(--transition), visibility 0s linear var(--transition);
-    padding: 0 0 3rem;
+    transition: opacity var(--transition), transform var(--transition), visibility 0s linear var(--transition), border-color var(--transition);
+    /* Reserve the left-stripe slot so activation doesn't shift layout. */
+    padding: 0 0 3rem 1.25rem;
+    border-left: 3px solid transparent;
   }
   .panel.is-active {
     opacity: 1;
     transform: translateY(0);
     pointer-events: auto;
     visibility: visible;
-    transition: opacity var(--transition), transform var(--transition), visibility 0s;
+    transition: opacity var(--transition), transform var(--transition), visibility 0s, border-color var(--transition);
+    border-left-color: var(--accent);
   }
   .panel-bar {
     height: 6px;
@@ -262,7 +268,8 @@ const firstAccent = panels[0]?.accent ?? '#d97706';
     font-weight: 600;
     line-height: 1.05;
     letter-spacing: -0.02em;
-    color: var(--ink);
+    color: var(--accent);
+    transition: color var(--transition);
   }
   .panel-role {
     margin-top: 1rem;

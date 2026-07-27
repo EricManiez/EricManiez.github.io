@@ -25,6 +25,7 @@ const music = defineCollection({
     role: z.string(),
     order: z.number(),
     accent: z.string(),
+    tags: z.array(z.string()).optional(),
     embed: z
       .object({
         provider: z.enum(['bandcamp', 'soundcloud', 'spotify', 'youtube', 'googledrive']),
@@ -53,6 +54,7 @@ const oddities = defineCollection({
     order: z.number(),
     accent: z.string(),
     inProgress: z.boolean().default(false),
+    tags: z.array(z.string()).optional(),
     embed: z
       .object({
         provider: z.enum(['bandcamp', 'soundcloud', 'spotify', 'youtube', 'googledrive']),
