@@ -10,13 +10,14 @@ interface Col {
   times: number;
   distance?: number | null; // km
   gain?: number | null;     // meters of elevation gain
+  avgSlope?: number | null; // average slope %
 }
 
 const FALLBACK: Col[] = [
-  { name: 'Col du Galibier',    country: 'FRA', times: 1, distance: 34.8, gain: 2095 },
-  { name: 'Col d’Izoard',       country: 'FRA', times: 1, distance: 14.1, gain: 1095 },
-  { name: 'Col de la Madeleine', country: 'FRA', times: 1, distance: 25.0, gain: 1540 },
-  { name: 'Col du Granon',      country: 'FRA', times: 1, distance: 11.3, gain: 1040 },
+  { name: 'Col du Galibier',    country: 'FRA', times: 1, distance: 34.8, gain: 2095, avgSlope: 6.0 },
+  { name: 'Col d’Izoard',       country: 'FRA', times: 1, distance: 14.1, gain: 1095, avgSlope: 7.3 },
+  { name: 'Col de la Madeleine', country: 'FRA', times: 1, distance: 25.0, gain: 1540, avgSlope: 6.2 },
+  { name: 'Col du Granon',      country: 'FRA', times: 1, distance: 11.3, gain: 1040, avgSlope: 9.2 },
 ];
 
 // Eager-load the JSON when it exists; empty object otherwise.
@@ -39,6 +40,7 @@ const rows = cols.map((c, i) => ({
   times: c.times ?? 0,
   distance: c.distance ?? null,
   gain: c.gain ?? null,
+  avgSlope: c.avgSlope ?? null,
 }));
 ---
 
@@ -58,6 +60,7 @@ const rows = cols.map((c, i) => ({
             <th data-key="name"     data-type="text">Col</th>
             <th data-key="distance" data-type="num">Distance</th>
             <th data-key="gain"     data-type="num">Gain</th>
+            <th data-key="avgslope" data-type="num">Avg slope</th>
             <th data-key="country"  data-type="text">Country</th>
             <th data-key="times"    data-type="num" data-active="desc">Reps</th>
           </tr>
@@ -70,10 +73,12 @@ const rows = cols.map((c, i) => ({
               data-times={r.times}
               data-distance={r.distance ?? ''}
               data-gain={r.gain ?? ''}
+              data-avgslope={r.avgSlope ?? ''}
             >
               <td class="c-name">{r.name}</td>
               <td class="c-num">{r.distance != null ? `${r.distance} km` : '—'}</td>
               <td class="c-num">{r.gain != null ? `${r.gain} m` : '—'}</td>
+              <td class="c-num">{r.avgSlope != null ? `${r.avgSlope}%` : '—'}</td>
               <td class="c-country">{r.country || '—'}</td>
               <td class="c-num c-reps">{r.times > 1 ? `${r.times}×` : '1'}</td>
             </tr>

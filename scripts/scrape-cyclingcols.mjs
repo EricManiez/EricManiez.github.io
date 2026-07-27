@@ -153,23 +153,27 @@ try {
           const n = parseFloat(s.replace(/\u00a0/g, ' ').replace(/[^\d.,]/g, '').replace(',', '.'));
           return Number.isFinite(n) ? n : null;
         };
-        const distEls = document.querySelectorAll('.cc-stat-badge[title="Distance"] .cc-stat-value');
-        const gainEls = document.querySelectorAll('.cc-stat-badge[title="Elevation Gain"] .cc-stat-value');
+        const distEls  = document.querySelectorAll('.cc-stat-badge[title="Distance"] .cc-stat-value');
+        const gainEls  = document.querySelectorAll('.cc-stat-badge[title="Elevation Gain"] .cc-stat-value');
+        const slopeEls = document.querySelectorAll('.cc-stat-badge[title="Average Slope"] .cc-stat-value');
         const routes = [];
         for (let i = 0; i < distEls.length; i++) {
           const d = num(distEls[i]?.textContent);
           const g = num(gainEls[i]?.textContent);
-          if (d != null) routes.push({ distance: d, gain: g });
+          const s = num(slopeEls[i]?.textContent);
+          if (d != null) routes.push({ distance: d, gain: g, avgSlope: s });
         }
-        if (routes.length === 0) return { distance: null, gain: null };
+        if (routes.length === 0) return { distance: null, gain: null, avgSlope: null };
         // Longest route by distance = the classic long version.
         return routes.reduce((a, b) => (b.distance > a.distance ? b : a));
       });
       col.distance = stats.distance;
       col.gain = stats.gain;
+      col.avgSlope = stats.avgSlope;
       const d = stats.distance != null ? `${stats.distance} km` : '?';
-      const g = stats.gain != null ? `${stats.gain} m gain` : '?';
-      console.log(`  ${col.name.padEnd(28)}  ${d.padStart(9)}  ${g.padStart(11)}`);
+      const g = stats.gain     != null ? `${stats.gain} m gain` : '?';
+      const s = stats.avgSlope != null ? `${stats.avgSlope}%`   : '?';
+      console.log(`  ${col.name.padEnd(28)}  ${d.padStart(9)}  ${g.padStart(11)}  ${s.padStart(6)}`);
     } catch (err) {
       console.warn(`  ${col.name}: failed (${err.message.split('\n')[0]})`);
       col.distance = null;
