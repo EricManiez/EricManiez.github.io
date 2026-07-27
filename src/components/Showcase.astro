@@ -1,0 +1,430 @@
+---
+import type { AstroComponentFactory } from 'astro/runtime/server/index.js';
+import Embed from './Embed.astro';
+
+export interface Panel {
+  slug: string;
+  title: string;
+  meta1: string;
+  meta2: string;
+  role: string;
+  accent: string;
+  badges?: string[];
+  embed?: {
+    provider: 'bandcamp' | 'soundcloud' | 'spotify' | 'youtube';
+    url: string;
+    height?: number;
+  };
+  link?: { label: string; url: string };
+  Content: AstroComponentFactory;
+}
+
+interface Props {
+  panels: Panel[];
+  emptyLabel: string;
+  kbdHint: string;
+  swipeHint: string;
+  prevLabel: string;
+  nextLabel: string;
+}
+
+const { panels, emptyLabel, kbdHint, swipeHint, prevLabel, nextLabel } = Astro.props;
+const firstAccent = panels[0]?.accent ?? '#d97706';
+---
+
+{panels.length === 0 ? (
+  <p class="text-sm text-[color:var(--color-ink-muted,#475569)]">{emptyLabel}</p>
+) : (
+  <div class="showcase" style={`--accent: ${firstAccent}`}>
+    <div class="tabs" role="tablist">
+      {panels.map((p, i) => (
+        <button
+          type="button"
+          class:list={['tab', i === 0 && 'is-active']}
+          role="tab"
+          aria-selected={i === 0 ? 'true' : 'false'}
+          data-tab={i}
+          data-slug={p.slug}
+          style={`--tab-accent: ${p.accent}`}
+        >
+          <span class="tab-dot" aria-hidden="true"></span>
+          <span class="tab-index">{String(i + 1).padStart(2, '0')}</span>
+          <span class="tab-label">{p.title}</span>
+        </button>
+      ))}
+    </div>
+
+    <div class="stack">
+      {panels.map((p, i) => (
+        <article
+          class:list={['panel', i === 0 && 'is-active']}
+          data-panel={i}
+          data-slug={p.slug}
+          data-accent={p.accent}
+          aria-hidden={i === 0 ? 'false' : 'true'}
+          role="tabpanel"
+        >
+          <div class="panel-bar" aria-hidden="true"></div>
+
+          <header class="panel-meta">
+            <span class="panel-meta-dot" aria-hidden="true"></span>
+            <span>{p.meta1}</span>
+            <span aria-hidden="true">·</span>
+            <span>{p.meta2}</span>
+            {p.badges?.map((b) => <span class="panel-badge">{b}</span>)}
+          </header>
+
+          <h2 class="panel-title">{p.title}</h2>
+          <p class="panel-role">{p.role}</p>
+
+          <div class="prose prose-slate max-w-none panel-prose">
+            <p.Content />
+          </div>
+
+          {p.embed && (
+            <div class="panel-embed">
+              <Embed
+                provider={p.embed.provider}
+                embedUrl={p.embed.url}
+                title={p.title}
+                height={p.embed.height}
+              />
+            </div>
+          )}
+
+          {p.link && (
+            <a class="panel-link" href={p.link.url} target="_blank" rel="noopener">
+              <span>{p.link.label}</span>
+              <span aria-hidden="true">→</span>
+            </a>
+          )}
+        </article>
+      ))}
+    </div>
+
+    <footer class="controls">
+      <div class="controls-left">
+        <span class="progress-dot" aria-hidden="true"></span>
+        <span class="progress" data-progress>01 / {String(panels.length).padStart(2, '0')}</span>
+        <span class="kbd-hint" aria-hidden="true">
+          <span class="kbd-desktop"><kbd>←</kbd> <kbd>→</kbd> {kbdHint}</span>
+          <span class="kbd-mobile">{swipeHint}</span>
+        </span>
+      </div>
+      <div class="controls-right">
+        <button type="button" class="arrow" data-prev aria-label={prevLabel}>
+          <span aria-hidden="true">←</span>
+        </button>
+        <button type="button" class="arrow" data-next aria-label={nextLabel}>
+          <span aria-hidden="true">→</span>
+        </button>
+      </div>
+    </footer>
+  </div>
+)}
+
+<style>
+  .showcase {
+    --accent: #d97706;
+    --ink: var(--color-ink, #0f172a);
+    --ink-muted: var(--color-ink-muted, #475569);
+    --transition: 300ms cubic-bezier(0.22, 1, 0.36, 1);
+  }
+
+  /* Tabs */
+  .tabs {
+    position: relative;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.25rem;
+    border-bottom: 1px solid rgb(0 0 0 / 0.1);
+    margin-bottom: 2.5rem;
+  }
+  .tab {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.6rem;
+    padding: 0.75rem 1rem 0.85rem;
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    font-family: inherit;
+    color: var(--ink-muted);
+    transition: color var(--transition), background var(--transition);
+    border-bottom: 3px solid transparent;
+    margin-bottom: -1px;
+    border-radius: 6px 6px 0 0;
+  }
+  .tab:hover { color: var(--ink); }
+  .tab-dot {
+    display: inline-block;
+    width: 8px;
+    height: 8px;
+    border-radius: 999px;
+    background: var(--tab-accent, #d97706);
+    opacity: 0.35;
+    transform: scale(0.75);
+    transition: opacity var(--transition), transform var(--transition);
+  }
+  .tab:hover .tab-dot { opacity: 0.7; }
+  .tab.is-active {
+    color: var(--ink);
+    border-bottom-color: var(--tab-accent, #d97706);
+    background: rgba(0, 0, 0, 0.02);
+  }
+  .tab.is-active .tab-dot {
+    opacity: 1;
+    transform: scale(1);
+    box-shadow: 0 0 0 3px color-mix(in oklab, var(--tab-accent, #d97706) 20%, transparent);
+  }
+  .tab-index {
+    font-family: var(--font-mono, ui-monospace, monospace);
+    font-size: 0.7rem;
+    letter-spacing: 0.05em;
+    color: var(--ink-muted);
+    opacity: 0.7;
+  }
+  .tab.is-active .tab-index { color: var(--tab-accent, #d97706); opacity: 1; }
+  .tab-label { font-size: 0.95rem; font-weight: 500; }
+
+  /* Stacked panels */
+  .stack {
+    display: grid;
+    grid-template-areas: "stack";
+    touch-action: pan-y;
+  }
+  .panel {
+    grid-area: stack;
+    opacity: 0;
+    transform: translateY(8px);
+    pointer-events: none;
+    visibility: hidden;
+    transition: opacity var(--transition), transform var(--transition), visibility 0s linear var(--transition);
+    padding: 0 0 3rem;
+  }
+  .panel.is-active {
+    opacity: 1;
+    transform: translateY(0);
+    pointer-events: auto;
+    visibility: visible;
+    transition: opacity var(--transition), transform var(--transition), visibility 0s;
+  }
+  .panel-bar {
+    height: 6px;
+    width: 64px;
+    border-radius: 999px;
+    background: var(--accent);
+    margin-bottom: 1.5rem;
+    transition: background var(--transition), width var(--transition);
+  }
+  .panel.is-active .panel-bar { width: 96px; }
+  .panel-meta {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 0.6rem;
+    font-family: var(--font-mono, ui-monospace, monospace);
+    font-size: 0.75rem;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    color: var(--ink-muted);
+  }
+  .panel-meta-dot {
+    display: inline-block;
+    width: 8px;
+    height: 8px;
+    border-radius: 999px;
+    background: var(--accent);
+    transition: background var(--transition);
+  }
+  .panel-badge {
+    display: inline-block;
+    padding: 0.15rem 0.5rem;
+    border-radius: 999px;
+    background: var(--accent);
+    color: white;
+    font-size: 0.65rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    transition: background var(--transition);
+  }
+  .panel-title {
+    margin-top: 0.75rem;
+    font-size: clamp(2.25rem, 5.5vw, 3.5rem);
+    font-weight: 600;
+    line-height: 1.05;
+    letter-spacing: -0.02em;
+    color: var(--ink);
+  }
+  .panel-role {
+    margin-top: 1rem;
+    font-family: var(--font-mono, ui-monospace, monospace);
+    font-size: 0.85rem;
+    color: var(--ink-muted);
+  }
+  .panel-prose { margin-top: 1.5rem; max-width: 42rem; color: var(--ink); }
+  .panel-embed { margin-top: 2rem; }
+  .panel-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-top: 2rem;
+    padding: 0.85rem 1.25rem;
+    border: 1px solid var(--accent);
+    border-radius: 0.6rem;
+    text-decoration: none;
+    color: var(--accent);
+    font-weight: 500;
+    transition: background var(--transition), color var(--transition);
+  }
+  .panel-link:hover { background: var(--accent); color: white; }
+
+  /* Controls */
+  .controls {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 1rem;
+    padding-top: 1.25rem;
+    border-top: 1px solid rgb(0 0 0 / 0.1);
+    flex-wrap: wrap;
+  }
+  .controls-left { display: flex; align-items: center; gap: 0.75rem; flex-wrap: wrap; }
+  .progress-dot {
+    display: inline-block;
+    width: 10px;
+    height: 10px;
+    border-radius: 999px;
+    background: var(--accent);
+    box-shadow: 0 0 0 3px color-mix(in oklab, var(--accent) 20%, transparent);
+    transition: background var(--transition), box-shadow var(--transition);
+  }
+  .progress {
+    font-family: var(--font-mono, ui-monospace, monospace);
+    font-size: 0.85rem;
+    color: var(--accent);
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    transition: color var(--transition);
+  }
+  .kbd-hint {
+    font-size: 0.7rem;
+    color: var(--ink-muted);
+    letter-spacing: 0.03em;
+    margin-left: 0.5rem;
+  }
+  .kbd-hint kbd {
+    display: inline-block;
+    padding: 0.1rem 0.4rem;
+    border: 1px solid rgb(0 0 0 / 0.2);
+    border-bottom-width: 2px;
+    border-radius: 0.25rem;
+    font-family: var(--font-mono, ui-monospace, monospace);
+    font-size: 0.7rem;
+    background: rgb(255 255 255 / 0.5);
+    color: var(--ink);
+  }
+  .kbd-mobile { display: none; }
+  @media (hover: none) and (pointer: coarse) {
+    .kbd-desktop { display: none; }
+    .kbd-mobile { display: inline; }
+  }
+  .controls-right { display: flex; gap: 0.5rem; }
+  .arrow {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 2.5rem;
+    height: 2.5rem;
+    border: 1px solid var(--accent);
+    border-radius: 999px;
+    background: transparent;
+    font-family: var(--font-mono, ui-monospace, monospace);
+    font-size: 1.1rem;
+    color: var(--accent);
+    cursor: pointer;
+    transition: background var(--transition), color var(--transition), transform 120ms ease;
+  }
+  .arrow:hover { background: var(--accent); color: white; }
+  .arrow:active { transform: scale(0.95); }
+  .arrow:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+  @media (prefers-reduced-motion: reduce) {
+    .panel, .panel-bar, .progress-dot, .tab-dot { transition: opacity 1ms; transform: none; }
+    .arrow { transition: none; }
+  }
+</style>
+
+<script>
+  document.querySelectorAll<HTMLElement>('.showcase').forEach((showcase) => {
+    const panels = Array.from(showcase.querySelectorAll<HTMLElement>('[data-panel]'));
+    const tabs = Array.from(showcase.querySelectorAll<HTMLButtonElement>('[data-tab]'));
+    const progress = showcase.querySelector<HTMLElement>('[data-progress]');
+    const prev = showcase.querySelector<HTMLButtonElement>('[data-prev]');
+    const next = showcase.querySelector<HTMLButtonElement>('[data-next]');
+    if (!progress || !prev || !next || panels.length === 0) return;
+
+    let current = 0;
+    const n = panels.length;
+
+    function apply(i: number) {
+      i = ((i % n) + n) % n;
+      current = i;
+      panels.forEach((p, k) => {
+        p.classList.toggle('is-active', k === i);
+        p.setAttribute('aria-hidden', k === i ? 'false' : 'true');
+      });
+      tabs.forEach((t, k) => {
+        t.classList.toggle('is-active', k === i);
+        t.setAttribute('aria-selected', k === i ? 'true' : 'false');
+      });
+      const accent = panels[i].dataset.accent ?? '#d97706';
+      showcase.style.setProperty('--accent', accent);
+      progress!.textContent = `${String(i + 1).padStart(2, '0')} / ${String(n).padStart(2, '0')}`;
+      const slug = panels[i].dataset.slug;
+      if (slug) history.replaceState(null, '', `#${slug}`);
+    }
+
+    tabs.forEach((tab, i) => tab.addEventListener('click', (e) => { e.preventDefault(); apply(i); }));
+    prev.addEventListener('click', () => apply(current - 1));
+    next.addEventListener('click', () => apply(current + 1));
+
+    document.addEventListener('keydown', (e) => {
+      const target = e.target as HTMLElement | null;
+      if (target && target.closest('input, textarea, iframe, [contenteditable]')) return;
+      // Only handle keys when this showcase is the visible one (avoid double-firing if two on page).
+      const rect = showcase.getBoundingClientRect();
+      const visible = rect.top < window.innerHeight && rect.bottom > 0;
+      if (!visible) return;
+      if (e.key === 'ArrowRight') { e.preventDefault(); apply(current + 1); }
+      if (e.key === 'ArrowLeft')  { e.preventDefault(); apply(current - 1); }
+    });
+
+    const stack = showcase.querySelector<HTMLElement>('.stack');
+    if (stack) {
+      let startX: number | null = null;
+      let startY: number | null = null;
+      let startedInEmbed = false;
+      stack.addEventListener('pointerdown', (e) => {
+        if (e.pointerType === 'mouse') return;
+        startX = e.clientX; startY = e.clientY;
+        startedInEmbed = !!(e.target as HTMLElement).closest('iframe');
+      }, { passive: true });
+      stack.addEventListener('pointerup', (e) => {
+        if (startX === null || startY === null) return;
+        if (startedInEmbed) { startX = null; return; }
+        const dx = e.clientX - startX; const dy = e.clientY - startY;
+        startX = null; startY = null;
+        if (Math.abs(dx) < 50) return;
+        if (Math.abs(dx) < Math.abs(dy) * 1.5) return;
+        apply(current + (dx < 0 ? 1 : -1));
+      }, { passive: true });
+      stack.addEventListener('pointercancel', () => { startX = null; startY = null; });
+    }
+
+    const hashSlug = location.hash.slice(1);
+    const initial = panels.findIndex((p) => p.dataset.slug === hashSlug);
+    if (initial > 0) apply(initial);
+  });
+</script>

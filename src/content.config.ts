@@ -43,4 +43,32 @@ const music = defineCollection({
   }),
 });
 
-export const collections = { projects, music };
+const oddities = defineCollection({
+  loader: glob({ pattern: '**/*.{md,mdx}', base: './src/content/oddities' }),
+  schema: z.object({
+    title: z.string(),
+    years: z.string(),
+    category: z.string(),
+    format: z.string(),
+    order: z.number(),
+    accent: z.string(),
+    inProgress: z.boolean().default(false),
+    embed: z
+      .object({
+        provider: z.enum(['bandcamp', 'soundcloud', 'spotify', 'youtube']),
+        url: z.string().url(),
+        height: z.number().optional(),
+      })
+      .optional(),
+    link: z
+      .object({
+        label: z.string(),
+        url: z.string().url(),
+      })
+      .optional(),
+    summary: z.string().optional(),
+    draft: z.boolean().default(false),
+  }),
+});
+
+export const collections = { projects, music, oddities };

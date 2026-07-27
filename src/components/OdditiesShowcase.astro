@@ -8,8 +8,9 @@ interface Props {
 }
 
 const { locale } = Astro.props;
+const inProgressLabel = t(locale, 'oddities.inProgress');
 
-const entries = (await getCollection('music', ({ id, data }) =>
+const entries = (await getCollection('oddities', ({ id, data }) =>
   !data.draft && id.startsWith(`${locale}/`)
 )).sort((a, b) => a.data.order - b.data.order);
 
@@ -20,9 +21,10 @@ const panels: Panel[] = await Promise.all(
       slug: entry.id.replace(/^[a-z]{2}\//, ''),
       title: entry.data.title,
       meta1: entry.data.years,
-      meta2: entry.data.genre,
-      role: entry.data.role,
+      meta2: entry.data.category,
+      role: entry.data.format,
       accent: entry.data.accent,
+      badges: entry.data.inProgress ? [inProgressLabel] : undefined,
       embed: entry.data.embed,
       link: entry.data.link,
       Content,
@@ -33,18 +35,18 @@ const panels: Panel[] = await Promise.all(
 
 <section class="mb-8">
   <p class="font-mono text-xs uppercase tracking-widest text-[color:var(--color-ink-muted,#475569)]">
-    {t(locale, 'music.title')}
+    {t(locale, 'oddities.title')}
   </p>
   <h1 class="mt-1 text-3xl font-semibold sm:text-4xl text-[color:var(--color-ink,#0f172a)]">
-    {t(locale, 'music.subtitle')}
+    {t(locale, 'oddities.subtitle')}
   </h1>
 </section>
 
 <Showcase
   panels={panels}
-  emptyLabel={t(locale, 'music.empty')}
-  kbdHint={t(locale, 'music.kbdHint')}
-  swipeHint={t(locale, 'music.swipeHint')}
-  prevLabel={t(locale, 'music.prev')}
-  nextLabel={t(locale, 'music.next')}
+  emptyLabel={t(locale, 'oddities.empty')}
+  kbdHint={t(locale, 'oddities.kbdHint')}
+  swipeHint={t(locale, 'oddities.swipeHint')}
+  prevLabel={t(locale, 'oddities.prev')}
+  nextLabel={t(locale, 'oddities.next')}
 />
