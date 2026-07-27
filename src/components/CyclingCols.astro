@@ -29,7 +29,6 @@ const hasScraped = scraped
   && scraped.uniqueCols.length > 0;
 
 const cols: Col[] = hasScraped ? scraped.uniqueCols : FALLBACK;
-const totalClimbs = hasScraped ? (scraped.eventCount ?? 0) : cols.length;
 
 // Serialize the rows as JSON so the client script can re-sort without
 // re-scraping the DOM (also cleaner for numeric comparisons on missing values).
@@ -48,11 +47,6 @@ const rows = cols.map((c, i) => ({
   <p class="text-sm text-[color:var(--color-ink-muted,#475569)]">No climbs recorded yet.</p>
 ) : (
   <div class="climbs">
-    <div class="climbs-summary">
-      <span class="stat"><span class="stat-num">{cols.length}</span> cols climbed</span>
-      <span class="stat"><span class="stat-num">{totalClimbs}</span> ascents</span>
-    </div>
-
     <div class="climbs-table-wrap">
       <table class="climbs-table">
         <thead>
@@ -91,28 +85,6 @@ const rows = cols.map((c, i) => ({
 
 <style>
   .climbs { margin-top: 1.5rem; }
-
-  .climbs-summary {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 1rem 2rem;
-    padding: 0.9rem 1rem;
-    margin-bottom: 1.25rem;
-    border-radius: 8px;
-    background: color-mix(in oklab, var(--accent, #d97706) 8%, transparent);
-    border-left: 4px solid var(--accent, #d97706);
-    font-family: var(--font-mono, ui-monospace, monospace);
-    font-size: 0.85rem;
-    color: var(--color-ink, #0f172a);
-    letter-spacing: 0.02em;
-  }
-  .stat { display: inline-flex; align-items: baseline; gap: 0.4rem; }
-  .stat-num {
-    font-size: 1.35rem;
-    font-weight: 700;
-    color: var(--accent, #d97706);
-    line-height: 1;
-  }
 
   .climbs-table-wrap {
     overflow-x: auto;

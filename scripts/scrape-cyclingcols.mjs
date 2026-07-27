@@ -171,8 +171,13 @@ try {
           if (d != null) routes.push({ distance: d, gain: g, avgSlope: s });
         }
         if (routes.length === 0) return { distance: null, gain: null, avgSlope: null };
-        // Longest route by distance = the classic long version.
-        return routes.reduce((a, b) => (b.distance > a.distance ? b : a));
+        // Steepest route = highest average slope. Ties broken by longer distance.
+        return routes.reduce((a, b) => {
+          const as = a.avgSlope ?? -Infinity;
+          const bs = b.avgSlope ?? -Infinity;
+          if (bs !== as) return bs > as ? b : a;
+          return (b.distance ?? 0) > (a.distance ?? 0) ? b : a;
+        });
       });
       col.distance = stats.distance;
       col.gain = stats.gain;
