@@ -22,7 +22,7 @@ const en = {
   'home.location': 'Lyon, France',
   'home.headline': 'Creative spirit, at the intersection of art & technology.',
   'home.intro':
-    'Software developer, music teacher, artist. I help people accomplish their creative and entrepreneurial vision — whatever the field.',
+    'Software developer, music teacher, artist. I help people accomplish their creative vision — whatever the field.',
   'home.sectionsHeading': 'Around here',
   'home.contactCta': 'Get in touch →',
   'music.title': 'Music',
@@ -81,7 +81,7 @@ const fr: typeof en = {
   'home.location': 'Lyon, France',
   'home.headline': 'Esprit créatif, à la croisée de l’art et de la technologie.',
   'home.intro':
-    'Développeur logiciel, professeur de musique, artiste. J’accompagne les projets créatifs et entrepreneuriaux — quel que soit le champ.',
+    'Développeur logiciel, professeur de musique, artiste. J’accompagne les projets créatifs — quel que soit le domaine.',
   'home.sectionsHeading': 'Par ici',
   'home.contactCta': 'Me contacter →',
   'music.title': 'Musique',
