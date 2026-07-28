@@ -68,10 +68,24 @@ const sections = [
 
 <style>
   .hero {
+    position: relative;
+    isolation: isolate;
     display: grid;
     grid-template-columns: 1fr;
     gap: 2rem;
     align-items: start;
+  }
+  .hero::before {
+    content: "";
+    position: absolute;
+    inset: -3rem;
+    z-index: -1;
+    pointer-events: none;
+    background: radial-gradient(
+      ellipse at 85% 20%,
+      color-mix(in oklab, var(--color-accent) 14%, transparent),
+      transparent 55%
+    );
   }
   @media (min-width: 768px) {
     .hero {
