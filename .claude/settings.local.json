@@ -56,7 +56,8 @@
       "Bash(rtk wc *)",
       "Bash(curl -s -A \"Mozilla/5.0\" https://www.cyclingcols.com/col/galibier wc -l /tmp/col-galibier.html rtk grep -oE '\\(distance|elevation|length|denivelé|dénivelé|km|meters?|altitude\\)' /tmp/col-galibier.html)",
       "Bash(cp \"/Users/emaniez/Desktop/Photos/Portfolio pics/6DF574D3-D221-44AF-8807-598DEE1C31C9.jpg\" /Users/emaniez/Code/portfolio/src/assets/home/portrait.jpg)",
-      "Bash(cp \"/Users/emaniez/Desktop/Photos/Portfolio pics/fav g.JPG\" /Users/emaniez/Code/portfolio/src/assets/music/leave-the-biker.jpg)"
+      "Bash(cp \"/Users/emaniez/Desktop/Photos/Portfolio pics/fav g.JPG\" /Users/emaniez/Code/portfolio/src/assets/music/leave-the-biker.jpg)",
+      "Bash(rtk sips *)"
     ]
   }
 }
