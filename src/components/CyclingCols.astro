@@ -94,7 +94,7 @@ const rows = cols.map((c, i) => ({
   .climbs-table-wrap {
     overflow-x: auto;
     border-radius: 8px;
-    border: 1px solid rgb(0 0 0 / 0.1);
+    border: 1px solid var(--color-border);
   }
   .climbs-table {
     width: 100%;
@@ -103,10 +103,10 @@ const rows = cols.map((c, i) => ({
     font-size: 0.9rem;
   }
   .climbs-table thead th {
-    background: rgb(0 0 0 / 0.02);
+    background: var(--color-surface-subtle);
     text-align: left;
     padding: 0.35rem 0.5rem;
-    border-bottom: 1px solid rgb(0 0 0 / 0.1);
+    border-bottom: 1px solid var(--color-border);
     white-space: nowrap;
     vertical-align: bottom;
   }
@@ -149,7 +149,7 @@ const rows = cols.map((c, i) => ({
   .th-btn[data-active] .sort-mark { opacity: 1; }
 
   .climbs-table thead th:has([data-type="num"]) { text-align: right; }
-  .climbs-table td { padding: 0.5rem 0.85rem; border-top: 1px solid rgb(0 0 0 / 0.05); }
+  .climbs-table td { padding: 0.5rem 0.85rem; border-top: 1px solid color-mix(in oklab, var(--color-ink) 6%, transparent); }
   .climbs-table tbody tr:first-child td { border-top: 0; }
   .climbs-table tbody tr { transition: background 120ms; }
   .climbs-table tbody tr:hover { background: color-mix(in oklab, var(--accent, #d97706) 5%, transparent); }

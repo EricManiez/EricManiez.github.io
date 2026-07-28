@@ -144,7 +144,7 @@ const firstAccent = panels[0]?.accent ?? '#d97706';
     display: flex;
     flex-wrap: wrap;
     gap: 0.25rem;
-    border-bottom: 1px solid rgb(0 0 0 / 0.1);
+    border-bottom: 1px solid var(--color-border);
     margin-bottom: 2.5rem;
   }
   .tab {
@@ -181,7 +181,7 @@ const firstAccent = panels[0]?.accent ?? '#d97706';
   .tab.is-active {
     color: var(--ink);
     border-bottom-color: var(--tab-accent, #d97706);
-    background: rgba(0, 0, 0, 0.02);
+    background: var(--color-surface-subtle);
   }
   .tab.is-active .tab-dot {
     opacity: 1;
@@ -324,7 +324,7 @@ const firstAccent = panels[0]?.accent ?? '#d97706';
     align-items: center;
     gap: 1rem;
     padding-top: 1.25rem;
-    border-top: 1px solid rgb(0 0 0 / 0.1);
+    border-top: 1px solid var(--color-border);
     flex-wrap: wrap;
   }
   .controls-left { display: flex; align-items: center; gap: 0.75rem; flex-wrap: wrap; }
@@ -354,12 +354,12 @@ const firstAccent = panels[0]?.accent ?? '#d97706';
   .kbd-hint kbd {
     display: inline-block;
     padding: 0.1rem 0.4rem;
-    border: 1px solid rgb(0 0 0 / 0.2);
+    border: 1px solid var(--color-border-strong);
     border-bottom-width: 2px;
     border-radius: 0.25rem;
     font-family: var(--font-mono, ui-monospace, monospace);
     font-size: 0.7rem;
-    background: rgb(255 255 255 / 0.5);
+    background: var(--color-kbd-bg);
     color: var(--ink);
   }
   .kbd-mobile { display: none; }

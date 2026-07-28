@@ -23,6 +23,18 @@ const locale = (Astro.currentLocale ?? defaultLocale) as Locale;
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <meta name="generator" content={Astro.generator} />
+    {/* Set the theme before body paints to avoid a flash of the wrong theme. */}
+    <script is:inline>
+      (() => {
+        try {
+          const stored = localStorage.getItem('theme');
+          const preferred = matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+          document.documentElement.setAttribute('data-theme', stored || preferred);
+        } catch (_) {
+          /* no-op: fall back to CSS default (light) */
+        }
+      })();
+    </script>
     <SEO title={title} description={description} image={image} />
   </head>
   <body>

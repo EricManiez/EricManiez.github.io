@@ -11,12 +11,30 @@
   --color-accent: #d97706;
 }
 
+:root {
+  color-scheme: light;
+  /* Border and surface tints derive from --color-ink so they auto-flip in dark mode. */
+  --color-border: color-mix(in oklab, var(--color-ink) 12%, transparent);
+  --color-border-strong: color-mix(in oklab, var(--color-ink) 20%, transparent);
+  --color-surface-subtle: color-mix(in oklab, var(--color-ink) 3%, transparent);
+  --color-kbd-bg: color-mix(in oklab, var(--color-paper) 50%, transparent);
+}
+
+html[data-theme="dark"] {
+  color-scheme: dark;
+  --color-paper: #0b1220;
+  --color-ink: #e2e8f0;
+  --color-ink-muted: #94a3b8;
+  --color-accent: #fbbf24;
+}
+
 html {
   background: var(--color-paper);
   color: var(--color-ink);
   font-family: var(--font-sans);
   scroll-behavior: smooth;
   -webkit-font-smoothing: antialiased;
+  transition: background-color 200ms, color 200ms;
 }
 
 body {
@@ -38,4 +56,24 @@ a:hover {
 
 .prose {
   color: var(--color-ink);
+}
+
+/* Tailwind Typography theming for both light & dark. */
+.prose {
+  --tw-prose-body: var(--color-ink);
+  --tw-prose-headings: var(--color-ink);
+  --tw-prose-lead: var(--color-ink);
+  --tw-prose-links: var(--color-accent);
+  --tw-prose-bold: var(--color-ink);
+  --tw-prose-counters: var(--color-ink-muted);
+  --tw-prose-bullets: var(--color-ink-muted);
+  --tw-prose-hr: var(--color-border);
+  --tw-prose-quotes: var(--color-ink);
+  --tw-prose-quote-borders: var(--color-border);
+  --tw-prose-captions: var(--color-ink-muted);
+  --tw-prose-code: var(--color-ink);
+  --tw-prose-pre-code: var(--color-ink);
+  --tw-prose-pre-bg: var(--color-surface-subtle);
+  --tw-prose-th-borders: var(--color-border);
+  --tw-prose-td-borders: var(--color-border);
 }

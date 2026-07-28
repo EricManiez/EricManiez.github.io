@@ -14,7 +14,7 @@ const locale = (Astro.currentLocale ?? defaultLocale) as Locale;
 const slug = project.id.replace(/^[a-z]{2}\//, '');
 ---
 
-<article class="group border border-black/10 rounded-lg p-5 transition hover:border-[color:var(--color-accent)]">
+<article class="group border border-[color:var(--color-border)] rounded-lg p-5 transition hover:border-[color:var(--color-accent)]">
   <a href={`/${locale}/projects/${slug}/`} class="no-underline text-[color:var(--color-ink)]">
     <div class="flex items-baseline justify-between gap-4">
       <h3 class="text-lg font-semibold group-hover:text-[color:var(--color-accent)]">{title}</h3>
