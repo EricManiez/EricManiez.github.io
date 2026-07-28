@@ -1,5 +1,7 @@
 ---
 import BaseLayout from '../../layouts/BaseLayout.astro';
+import { Image } from 'astro:assets';
+import portrait from '../../assets/home/portrait.jpg';
 import { t } from '../../i18n/strings';
 
 const locale = 'en';
@@ -18,16 +20,28 @@ const sections = [
   description={t(locale, 'home.headline')}
   wide
 >
-  <section class="mb-14">
-    <p class="font-mono text-xs uppercase tracking-widest text-[color:var(--color-ink-muted)]">
-      {t(locale, 'home.location')}
-    </p>
-    <h1 class="mt-2 text-4xl font-semibold leading-tight sm:text-5xl text-[color:var(--color-ink)]">
-      {t(locale, 'home.headline')}
-    </h1>
-    <p class="mt-6 max-w-xl text-lg text-[color:var(--color-ink-muted)]">
-      {t(locale, 'home.intro')}
-    </p>
+  <section class="hero mb-14">
+    <div class="hero-text">
+      <p class="font-mono text-xs uppercase tracking-widest text-[color:var(--color-ink-muted)]">
+        {t(locale, 'home.location')}
+      </p>
+      <h1 class="mt-2 text-4xl font-semibold leading-tight sm:text-5xl text-[color:var(--color-ink)]">
+        {t(locale, 'home.headline')}
+      </h1>
+      <p class="mt-6 max-w-xl text-lg text-[color:var(--color-ink-muted)]">
+        {t(locale, 'home.intro')}
+      </p>
+    </div>
+    <figure class="hero-portrait">
+      <Image
+        src={portrait}
+        alt="Portrait of Eric Maniez"
+        widths={[320, 480, 640, 800]}
+        sizes="(min-width: 768px) 22rem, min(80vw, 22rem)"
+        loading="eager"
+        fetchpriority="high"
+      />
+    </figure>
   </section>
 
   <section>
@@ -53,6 +67,40 @@ const sections = [
 </BaseLayout>
 
 <style>
+  .hero {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 2rem;
+    align-items: start;
+  }
+  @media (min-width: 768px) {
+    .hero {
+      grid-template-columns: minmax(0, 1fr) auto;
+      gap: 3rem;
+      align-items: center;
+    }
+  }
+  .hero-text { min-width: 0; }
+  .hero-portrait {
+    margin: 0;
+    width: min(80vw, 22rem);
+    justify-self: start;
+    border-radius: 0.75rem;
+    overflow: hidden;
+    border: 1px solid var(--color-border);
+    box-shadow: 0 6px 24px color-mix(in oklab, var(--color-ink) 10%, transparent);
+    background: var(--color-surface-subtle);
+  }
+  @media (min-width: 768px) {
+    .hero-portrait { justify-self: end; }
+  }
+  .hero-portrait :global(img) {
+    display: block;
+    width: 100%;
+    height: auto;
+    object-fit: cover;
+  }
+
   .section-grid {
     display: grid;
     grid-template-columns: 1fr;
