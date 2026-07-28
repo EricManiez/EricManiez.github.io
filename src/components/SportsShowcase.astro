@@ -26,6 +26,8 @@ const panels: Panel[] = await Promise.all(
       accent: entry.data.accent,
       badges: entry.data.ongoing ? [ongoingLabel] : undefined,
       tags: entry.data.tags,
+      cover: entry.data.cover,
+      coverAlt: entry.data.coverAlt,
       embed: entry.data.embed,
       link: entry.data.link,
       Content,

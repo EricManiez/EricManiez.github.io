@@ -18,7 +18,7 @@ const projects = defineCollection({
 
 const music = defineCollection({
   loader: glob({ pattern: '**/*.{md,mdx}', base: './src/content/music' }),
-  schema: z.object({
+  schema: ({ image }) => z.object({
     title: z.string(),
     years: z.string(),
     genre: z.string(),
@@ -26,6 +26,8 @@ const music = defineCollection({
     order: z.number(),
     accent: z.string(),
     tags: z.array(z.string()).optional(),
+    cover: image().optional(),
+    coverAlt: z.string().optional(),
     embed: z
       .object({
         provider: z.enum(['bandcamp', 'soundcloud', 'spotify', 'youtube', 'googledrive']),
@@ -46,7 +48,7 @@ const music = defineCollection({
 
 const oddities = defineCollection({
   loader: glob({ pattern: '**/*.{md,mdx}', base: './src/content/oddities' }),
-  schema: z.object({
+  schema: ({ image }) => z.object({
     title: z.string(),
     years: z.string(),
     category: z.string(),
@@ -55,6 +57,8 @@ const oddities = defineCollection({
     accent: z.string(),
     inProgress: z.boolean().default(false),
     tags: z.array(z.string()).optional(),
+    cover: image().optional(),
+    coverAlt: z.string().optional(),
     embed: z
       .object({
         provider: z.enum(['bandcamp', 'soundcloud', 'spotify', 'youtube', 'googledrive']),
@@ -75,7 +79,7 @@ const oddities = defineCollection({
 
 const engineering = defineCollection({
   loader: glob({ pattern: '**/*.{md,mdx}', base: './src/content/engineering' }),
-  schema: z.object({
+  schema: ({ image }) => z.object({
     title: z.string(),
     years: z.string(),
     category: z.string(),
@@ -84,6 +88,8 @@ const engineering = defineCollection({
     accent: z.string(),
     ongoing: z.boolean().default(false),
     stack: z.array(z.string()).optional(),
+    cover: image().optional(),
+    coverAlt: z.string().optional(),
     embed: z
       .object({
         provider: z.enum(['bandcamp', 'soundcloud', 'spotify', 'youtube', 'googledrive']),
@@ -104,7 +110,7 @@ const engineering = defineCollection({
 
 const sports = defineCollection({
   loader: glob({ pattern: '**/*.{md,mdx}', base: './src/content/sports' }),
-  schema: z.object({
+  schema: ({ image }) => z.object({
     title: z.string(),
     years: z.string(),
     category: z.string(),
@@ -113,6 +119,8 @@ const sports = defineCollection({
     accent: z.string(),
     ongoing: z.boolean().default(false),
     tags: z.array(z.string()).optional(),
+    cover: image().optional(),
+    coverAlt: z.string().optional(),
     embed: z
       .object({
         provider: z.enum(['bandcamp', 'soundcloud', 'spotify', 'youtube', 'googledrive']),
@@ -133,7 +141,7 @@ const sports = defineCollection({
 
 const teaching = defineCollection({
   loader: glob({ pattern: '**/*.{md,mdx}', base: './src/content/teaching' }),
-  schema: z.object({
+  schema: ({ image }) => z.object({
     title: z.string(),
     meta1: z.string(),
     meta2: z.string(),
@@ -141,6 +149,8 @@ const teaching = defineCollection({
     order: z.number(),
     accent: z.string(),
     tags: z.array(z.string()).optional(),
+    cover: image().optional(),
+    coverAlt: z.string().optional(),
     summary: z.string().optional(),
     draft: z.boolean().default(false),
   }),
