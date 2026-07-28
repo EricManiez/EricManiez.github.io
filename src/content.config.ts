@@ -131,4 +131,19 @@ const sports = defineCollection({
   }),
 });
 
-export const collections = { projects, music, oddities, engineering, sports };
+const teaching = defineCollection({
+  loader: glob({ pattern: '**/*.{md,mdx}', base: './src/content/teaching' }),
+  schema: z.object({
+    title: z.string(),
+    meta1: z.string(),
+    meta2: z.string(),
+    role: z.string(),
+    order: z.number(),
+    accent: z.string(),
+    tags: z.array(z.string()).optional(),
+    summary: z.string().optional(),
+    draft: z.boolean().default(false),
+  }),
+});
+
+export const collections = { projects, music, oddities, engineering, sports, teaching };

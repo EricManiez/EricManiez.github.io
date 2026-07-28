@@ -1,43 +1,15 @@
 ---
 import BaseLayout from '../../layouts/BaseLayout.astro';
+import TeachingShowcase from '../../components/TeachingShowcase.astro';
 import { t } from '../../i18n/strings';
+
 const locale = 'fr';
 ---
 
 <BaseLayout
-  title="Enseignement — Eric Maniez"
+  title={`${t(locale, 'teaching.title')} — Eric Maniez`}
   description={t(locale, 'teaching.subtitle')}
+  wide
 >
-  <h1 class="text-3xl font-semibold">{t(locale, 'teaching.title')}</h1>
-  <p class="mt-2 text-[color:var(--color-ink-muted)]">
-    {t(locale, 'teaching.subtitle')}
-  </p>
-
-  <section class="prose prose-slate mt-8 max-w-none">
-    <h2>Ce que j’enseigne</h2>
-    <p>
-      À compléter — vos instruments, styles, publics, formats
-      (présentiel, à distance), et le déroulé d’un cours type.
-    </p>
-
-    <h2>À qui ça s’adresse</h2>
-    <p>
-      Décrivez les élèves avec qui vous travaillez le mieux :
-      débutants, niveau intermédiaire, adultes reprenant un instrument,
-      élèves préparant un concours ou une audition, etc.
-    </p>
-
-    <h2>Formats &amp; tarifs</h2>
-    <ul>
-      <li>Cours particuliers — hebdomadaires ou bimensuels.</li>
-      <li>Ateliers en petit groupe — projets collectifs.</li>
-      <li>Consultations ponctuelles — arrangement, production, coaching.</li>
-    </ul>
-
-    <h2>Prendre contact</h2>
-    <p>
-      Intéressé·e par un cours ou un atelier ?
-      <a href="/fr/about/#contact">Envoyez-moi un message</a>.
-    </p>
-  </section>
+  <TeachingShowcase locale={locale} />
 </BaseLayout>
