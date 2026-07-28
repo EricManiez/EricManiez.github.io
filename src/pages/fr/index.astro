@@ -1,54 +1,130 @@
 ---
-import { getCollection } from 'astro:content';
 import BaseLayout from '../../layouts/BaseLayout.astro';
-import ProjectCard from '../../components/ProjectCard.astro';
 import { t } from '../../i18n/strings';
 
 const locale = 'fr';
-const projects = (await getCollection('projects', ({ id, data }) =>
-  !data.draft && id.startsWith(`${locale}/`)
-))
-  .filter((p) => p.data.featured)
-  .sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf())
-  .slice(0, 3);
+
+const sections = [
+  { key: 'engineering', href: `/${locale}/engineering/`, accent: '#4338ca' },
+  { key: 'music',       href: `/${locale}/music/`,       accent: '#c2410c' },
+  { key: 'teaching',    href: `/${locale}/teaching/`,    accent: '#15803d' },
+  { key: 'sports',      href: `/${locale}/sports/`,      accent: '#65a30d' },
+  { key: 'oddities',    href: `/${locale}/oddities/`,    accent: '#0369a1' },
+] as const;
 ---
 
 <BaseLayout
   title="Eric Maniez — Développeur, Musicien, Enseignant"
   description={t(locale, 'home.headline')}
+  wide
 >
-  <section class="mb-16">
+  <section class="mb-14">
     <p class="font-mono text-xs uppercase tracking-widest text-[color:var(--color-ink-muted)]">
       {t(locale, 'home.location')}
     </p>
-    <h1 class="mt-2 text-4xl font-semibold leading-tight sm:text-5xl">
+    <h1 class="mt-2 text-4xl font-semibold leading-tight sm:text-5xl text-[color:var(--color-ink)]">
       {t(locale, 'home.headline')}
     </h1>
     <p class="mt-6 max-w-xl text-lg text-[color:var(--color-ink-muted)]">
       {t(locale, 'home.intro')}
     </p>
-    <div class="mt-8 flex flex-wrap gap-4 text-sm">
-      <a href={`/${locale}/projects/`} class="no-underline rounded-md border border-[color:var(--color-accent)] px-4 py-2 text-[color:var(--color-accent)] hover:bg-[color:var(--color-accent)] hover:text-white">
-        {t(locale, 'home.cta.projects')}
-      </a>
-      <a href={`/${locale}/music/`} class="no-underline rounded-md border border-black/20 px-4 py-2 text-[color:var(--color-ink)] hover:border-[color:var(--color-accent)]">
-        {t(locale, 'home.cta.music')}
-      </a>
-      <a href={`/${locale}/teaching/`} class="no-underline rounded-md border border-black/20 px-4 py-2 text-[color:var(--color-ink)] hover:border-[color:var(--color-accent)]">
-        {t(locale, 'home.cta.teaching')}
-      </a>
+  </section>
+
+  <section>
+    <p class="font-mono text-xs uppercase tracking-widest text-[color:var(--color-ink-muted)] mb-4">
+      {t(locale, 'home.sectionsHeading')}
+    </p>
+    <div class="section-grid">
+      {sections.map((s) => (
+        <a class="section-card" href={s.href} style={`--card-accent: ${s.accent}`}>
+          <span class="section-card-title">{t(locale, `${s.key}.title` as any)}</span>
+          <span class="section-card-sub">{t(locale, `${s.key}.subtitle` as any)}</span>
+          <span class="section-card-arrow" aria-hidden="true">→</span>
+        </a>
+      ))}
     </div>
   </section>
 
-  {projects.length > 0 && (
-    <section>
-      <div class="flex items-baseline justify-between mb-4">
-        <h2 class="text-xl font-semibold">{t(locale, 'home.featured')}</h2>
-        <a href={`/${locale}/projects/`} class="text-sm">{t(locale, 'home.allProjects')}</a>
-      </div>
-      <div class="grid gap-4">
-        {projects.map((project) => <ProjectCard project={project} />)}
-      </div>
-    </section>
-  )}
+  <p class="mt-10">
+    <a class="contact-cta" href={`/${locale}/contact/`}>
+      {t(locale, 'home.contactCta')}
+    </a>
+  </p>
 </BaseLayout>
+
+<style>
+  .section-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 0.9rem;
+  }
+  @media (min-width: 640px) {
+    .section-grid { grid-template-columns: repeat(2, 1fr); }
+  }
+  @media (min-width: 1024px) {
+    .section-grid { grid-template-columns: repeat(3, 1fr); }
+  }
+
+  .section-card {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+    padding: 1.1rem 1.25rem 1rem 1.35rem;
+    border: 1px solid rgb(0 0 0 / 0.1);
+    border-left: 4px solid var(--card-accent, #d97706);
+    border-radius: 0.6rem;
+    background: transparent;
+    text-decoration: none;
+    color: var(--color-ink, #0f172a);
+    transition: background 200ms, border-color 200ms, transform 200ms;
+    overflow: hidden;
+  }
+  .section-card:hover {
+    background: color-mix(in oklab, var(--card-accent, #d97706) 7%, transparent);
+    border-color: color-mix(in oklab, var(--card-accent, #d97706) 40%, transparent);
+    border-left-color: var(--card-accent, #d97706);
+    transform: translateY(-1px);
+  }
+  .section-card-title {
+    font-size: 1.15rem;
+    font-weight: 600;
+    color: var(--card-accent, #d97706);
+    letter-spacing: -0.01em;
+  }
+  .section-card-sub {
+    font-size: 0.9rem;
+    line-height: 1.4;
+    color: var(--color-ink-muted, #475569);
+    max-width: 32rem;
+  }
+  .section-card-arrow {
+    position: absolute;
+    top: 0.9rem;
+    right: 1rem;
+    font-family: var(--font-mono, ui-monospace, monospace);
+    color: var(--card-accent, #d97706);
+    opacity: 0.35;
+    transition: opacity 200ms, transform 200ms;
+  }
+  .section-card:hover .section-card-arrow {
+    opacity: 1;
+    transform: translateX(3px);
+  }
+
+  .contact-cta {
+    display: inline-block;
+    font-family: var(--font-mono, ui-monospace, monospace);
+    font-size: 0.85rem;
+    letter-spacing: 0.05em;
+    color: var(--color-ink-muted, #475569);
+    text-decoration: none;
+    padding: 0.5rem 0;
+    border-bottom: 1px solid transparent;
+    transition: color 150ms, border-color 150ms;
+  }
+  .contact-cta:hover {
+    color: var(--color-accent, #d97706);
+    border-bottom-color: var(--color-accent, #d97706);
+  }
+</style>
