@@ -81,9 +81,13 @@ const sections = [
     inset: -3rem;
     z-index: -1;
     pointer-events: none;
+    /* Anchoring the gradient at the top-right corner of the pseudo means
+       there's no area "beyond" the tint to cut off — the visible right
+       edge coincides with the gradient center, so it fades cleanly
+       downward and leftward. */
     background: radial-gradient(
-      ellipse at 85% 20%,
-      color-mix(in oklab, var(--color-accent) 14%, transparent),
+      ellipse at 100% 0%,
+      color-mix(in oklab, var(--color-accent) 16%, transparent),
       transparent 55%
     );
   }
